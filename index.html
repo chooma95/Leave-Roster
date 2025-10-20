@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Allocation Roster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- MODULAR CSS IMPORTS - Stage 1 Implementation -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/table.css">
+    <link rel="stylesheet" href="css/phone-shifts.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div id="app" class="app">
+        <header class="header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <span class="material-icons">calendar_today</span>
+                    </div>
+                    <div class="brand-text">
+                        <h1>Work Allocation Roster</h1>
+                        <div class="header-meta">
+                            <span id="week-display" class="week-display">Loading...</span>
+                            <div id="mode-indicator" class="mode-indicator view-mode">
+                                <span class="material-icons">visibility</span>
+                                <span class="mode-text">View Mode</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <button id="random-generate-btn" class="btn btn-secondary build-mode-only" style="display: none;" title="Generate smart assignments for the current week (Ctrl+R)">
+                        <span class="material-icons">shuffle</span>
+                        Generate Shifts
+                    </button>
+                    
+                    <button id="copy-prev-week-btn" class="btn btn-secondary build-mode-only" style="display: none;" title="Copy assignments from previous week">
+                        <span class="material-icons">content_copy</span>
+                        Copy Previous Week
+                    </button>
+                    
+                    <button id="skills-matrix-btn" class="btn btn-accent build-mode-only" style="display: none;" title="Configure staff skill levels (Ctrl+S)">
+                        <span class="material-icons">engineering</span>
+                        Skills Matrix
+                    </button>
+                    
+                    <button id="leave-roster-btn" class="btn btn-primary" title="View and manage leave roster (Ctrl+L)">
+                        <span class="material-icons">event_available</span>
+                        Leave Roster
+                    </button>
+                    
+                    <button id="manage-btn" class="btn btn-accent" title="Manage system or enter build mode (Ctrl+B)">
+                        <span class="material-icons">settings</span>
+                        Manage
+                    </button>
+                    
+                    <!-- NEW: Exit Build Mode Button -->
+                    <button id="exit-build-btn" class="btn btn-danger build-mode-only" style="display: none;" title="Exit build mode and return to view-only (Ctrl+Esc)">
+                        <span class="material-icons">logout</span>
+                        Exit Build Mode
+                    </button>
+                    
+                    <button id="theme-toggle" class="btn btn-icon" title="Toggle light/dark theme">
+                        <span id="theme-icon" class="material-icons">dark_mode</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="nav-controls" aria-label="Navigation controls">
+            <div class="week-nav">
+                <button id="prev-week" class="btn btn-ghost" aria-label="Previous week">
+                    <span class="material-icons">chevron_left</span>
+                    Previous
+                </button>
+                <button id="today-btn" class="btn btn-ghost today-btn" aria-label="Go to current week">
+                    <span class="material-icons">today</span>
+                    Today
+                </button>
+                <button id="next-week" class="btn btn-ghost" aria-label="Next week">
+                    Next
+                    <span class="material-icons">chevron_right</span>
+                </button>
+            </div>
+            
+            <div class="view-controls">
+                <label for="user-select" class="sr-only">Select user for personal view</label>
+                <select id="user-select" class="select-input" aria-label="Select user">
+                    <option value="">Select User</option>
+                </select>
+                <div id="view-toggle" class="toggle-group" role="tablist" aria-label="View mode">
+                    <button data-view="full" class="toggle-btn active" role="tab" aria-selected="true" aria-controls="roster-container">
+                        <span class="material-icons">view_list</span>
+                        Full Roster
+                    </button>
+                    <button data-view="personal" class="toggle-btn" role="tab" aria-selected="false" aria-controls="roster-container">
+                        <span class="material-icons">person</span>
+                        My Roster
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main id="main-content" class="main-content">
+            <div class="roster-container">
+                <div id="grid-parent-container" class="grid-parent">
+                    <div id="grid-container" class="grid-container" role="region" aria-label="Work allocation roster table">
+                        <table class="roster-table" role="table" aria-label="Weekly work allocation roster">
+                            <thead id="grid-header" class="table-header"></thead>
+                            <tbody id="grid-body" class="table-body"></tbody>
+                            <tfoot id="grid-footer" class="table-footer"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Management Modal -->
+        <div id="manage-modal" class="modal-overlay hidden" role="dialog" aria-labelledby="manage-modal-title" aria-modal="true">
+            <div class="modal modal-large">
+                <div class="modal-header">
+                    <h2 id="manage-modal-title">Manage System</h2>
+                    <button id="close-modal-btn" class="btn btn-icon" aria-label="Close modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <div class="manage-grid">
+                        <div class="manage-section">
+                            <div class="section-header">
+                                <span class="material-icons">people</span>
+                                <h3>Staff Management</h3>
+                            </div>
+                            <div id="staff-list" class="item-list" role="list" aria-label="Staff members"></div>
+                            <div class="add-form">
+                                <label for="new-staff-name" class="sr-only">New staff member name</label>
+                                <input type="text" id="new-staff-name" placeholder="Enter staff name" class="form-input" aria-label="New staff member name">
+                                <button id="add-staff-btn" class="btn btn-primary">
+                                    <span class="material-icons">add</span>
+                                    Add Staff
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="manage-section">
+                            <div class="section-header">
+                                <span class="material-icons">task</span>
+                                <h3>Task Management</h3>
+                            </div>
+                            <div id="task-list" class="item-list" role="list" aria-label="Tasks"></div>
+                            <div class="add-form">
+                                <label for="new-task-name" class="sr-only">New task name</label>
+                                <input type="text" id="new-task-name" placeholder="Enter task name" class="form-input" aria-label="New task name">
+                                <button id="add-task-btn" class="btn btn-primary">
+                                    <span class="material-icons">add</span>
+                                    Add Task
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="manage-section">
+                            <div class="section-header">
+                                <span class="material-icons">lock</span>
+                                <h3>Roster Locks</h3>
+                            </div>
+                            <div id="lock-list" class="item-list" role="list" aria-label="Locked months"></div>
+                            <div class="add-form">
+                                <label for="new-lock-month" class="sr-only">Month to lock</label>
+                                <input type="month" id="new-lock-month" class="form-input" aria-label="Month to lock">
+                                <button id="add-lock-btn" class="btn btn-danger">
+                                    <span class="material-icons">lock</span>
+                                    Lock Month
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="manage-actions">
+                        <button id="export-data-btn" class="btn btn-secondary">
+                            <span class="material-icons">download</span>
+                            Export Data
+                        </button>
+                        <label for="import-data-input" class="btn btn-secondary">
+                            <span class="material-icons">upload</span>
+                            Import Data
+                        </label>
+                        <input type="file" id="import-data-input" accept=".json" style="display: none;" aria-label="Import data file">
+                        <button id="clear-data-btn" class="btn btn-danger">
+                            <span class="material-icons">delete_forever</span>
+                            Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignment Modal -->
+        <div id="assignment-modal" class="modal-overlay hidden" role="dialog" aria-labelledby="assignment-modal-title" aria-modal="true">
+            <div class="modal modal-medium">
+                <div class="modal-header">
+                    <h2 id="assignment-modal-title">Assign Staff</h2>
+                    <button id="assignment-cancel" class="btn btn-icon" aria-label="Close assignment modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <div id="assignment-staff-list" class="staff-selection" role="listbox" aria-label="Available staff members"></div>
+                    <div id="shift-assignment-controls" class="shift-controls hidden">
+                        <h3>Select Staff Members for Shift Coverage</h3>
+                        <p class="shift-info">Choose up to 2 people for this shift</p>
+                        <div id="shift-limit-warning" class="shift-limit-warning hidden" role="alert">
+                            Maximum 2 staff members allowed for shift coverage
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="assignment-save" class="btn btn-primary">
+                        <span class="material-icons">save</span>
+                        Save Assignment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Planning Modal -->
+        <div id="leave-planning-modal" class="modal-overlay hidden" role="dialog" aria-labelledby="leave-planning-title" aria-modal="true">
+            <div class="modal modal-medium">
+                <div class="modal-header">
+                    <h2 id="leave-planning-title">Plan Leave</h2>
+                    <button id="leave-planning-cancel" class="btn btn-icon" aria-label="Close leave planning modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <div class="leave-planning-form">
+                        <div class="form-group">
+                            <label for="leave-staff-select">Staff Member:</label>
+                            <select id="leave-staff-select" class="form-input">
+                                <option value="">Select staff member</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="leave-comment">Leave Details:</label>
+                            <input type="text" id="leave-comment" class="form-input" placeholder="e.g., 5hr day, finishing at 3pm, AL">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="leave-planning-save" class="btn btn-primary">
+                        <span class="material-icons">save</span>
+                        Save Leave
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave/Phone Roster Modal -->
+        <div id="leave-modal" class="modal-overlay hidden" role="dialog" aria-labelledby="leave-modal-title" aria-modal="true">
+            <div class="modal modal-fullscreen">
+                <div class="modal-header">
+                    <h2 id="leave-modal-title">Monthly Leave & Phone Coverage</h2>
+                    <div class="calendar-nav">
+                        <button id="prev-month-leave" class="btn btn-icon" aria-label="Previous month">
+                            <span class="material-icons">chevron_left</span>
+                        </button>
+                        <h3 id="leave-month-display" class="month-display"></h3>
+                        <button id="next-month-leave" class="btn btn-icon" aria-label="Next month">
+                            <span class="material-icons">chevron_right</span>
+                        </button>
+                    </div>
+                    <button id="close-leave-modal-btn" class="btn btn-icon" aria-label="Close leave modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <div class="phone-roster-grid" id="phone-roster-grid" role="grid" aria-label="Monthly phone coverage and leave grid"></div>
+                    <div class="leave-legend">
+                        <h4>Instructions</h4>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-color early-shift"></div>
+                                <span><strong>Early Phone Coverage:</strong> 2 people required per shift (6-weekly rotation)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color late-shift"></div>
+                                <span><strong>Late Phone Coverage:</strong> 2 people required per shift (6-weekly rotation)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color planned-leave"></div>
+                                <span><strong>Planned Leave:</strong> Click to add leave details (e.g., "5hr day", "AL - annual leave")</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="material-icons">swap_horiz</span>
+                                <span><strong>Shift Swaps:</strong> Original staff shown with strikethrough when covered</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="material-icons">today</span>
+                                <span><strong>Working Days Only:</strong> Weekends and holidays excluded from roster</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading" class="loading-overlay hidden" role="status" aria-live="polite">
+            <div class="loading-spinner">
+                <div class="spinner" aria-hidden="true"></div>
+                <div class="loading-text">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Error Display -->
+        <div id="error-display" class="error-display hidden" role="alert" aria-live="assertive">
+            <div class="error-content">
+                <span class="material-icons" aria-hidden="true">error</span>
+                <div class="error-message"></div>
+                <button class="btn btn-ghost error-dismiss">Dismiss</button>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal-overlay hidden" role="dialog" aria-labelledby="help-modal-title" aria-modal="true">
+            <div class="modal modal-large">
+                <div class="modal-header">
+                    <h2 id="help-modal-title">Help & Instructions</h2>
+                    <button class="btn btn-icon close-help" aria-label="Close help modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <div class="help-content">
+                        <section class="help-section">
+                            <h3>Getting Started</h3>
+                            <ul>
+                                <li>Use the <strong>Manage</strong> button to enter build mode (password: CAU)</li>
+                                <li>Navigate weeks using the Previous/Next buttons or Ctrl+Arrow keys</li>
+                                <li>Click <strong>Today</strong> to return to the current week</li>
+                                <li>Switch between Full Roster and My Roster views</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="help-section">
+                            <h3>Build Mode Features</h3>
+                            <ul>
+                                <li><strong>Generate Shifts:</strong> Automatically assigns phone shifts for the week</li>
+                                <li><strong>Copy Previous Week:</strong> Copies all assignments from the previous week</li>
+                                <li><strong>Skills Matrix:</strong> Configure staff skill levels for each task</li>
+                                <li><strong>Exit Build Mode:</strong> Return to view-only mode when finished</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="help-section">
+                            <h3>Assignment Types</h3>
+                            <ul>
+                                <li><strong>Triage:</strong> Click section headers to assign triage coverage</li>
+                                <li><strong>Tasks:</strong> Click individual cells to assign staff to specific tasks</li>
+                                <li><strong>Phone Coverage:</strong> Early and late shifts with 6-week rotation</li>
+                                <li><strong>Leave:</strong> Plan and track staff leave</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="help-section">
+                            <h3>Keyboard Shortcuts</h3>
+                            <ul>
+                                <li><strong>Ctrl + ←/→:</strong> Navigate weeks</li>
+                                <li><strong>Ctrl + Home:</strong> Go to current week</li>
+                                <li><strong>Ctrl + B:</strong> Toggle build mode</li>
+                                <li><strong>Ctrl + R:</strong> Generate shifts (build mode)</li>
+                                <li><strong>Ctrl + Escape:</strong> Quick exit build mode</li>
+                                <li><strong>Escape:</strong> Close modals</li>
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Button -->
+        <button id="help-btn" class="btn btn-icon help-button" title="Help & Instructions" aria-label="Help & Instructions">
+            <span class="material-icons">help</span>
+        </button>
+
+        <!-- Theme Saved Notification -->
+        <div id="theme-saved" class="theme-saved" role="status" aria-live="polite">
+            Theme preference saved!
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="./app.js"></script>
+</body>
+</html>

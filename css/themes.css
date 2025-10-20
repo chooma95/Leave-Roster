@@ -1,0 +1,358 @@
+/* themes.css - Theme variables and switching */
+
+/* Light Theme (Default) - Already defined in base.css */
+/* This file extends with additional theme-specific styling */
+
+/* Dark Theme Extended Styles */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Dark Theme Component Overrides */
+[data-theme="dark"] .modal {
+  background: var(--gray-50);
+  border-color: var(--gray-200);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+  background: var(--gray-100);
+  border-color: var(--gray-200);
+}
+
+[data-theme="dark"] .assignment-info,
+[data-theme="dark"] .shift-section {
+  background: var(--gray-100);
+  border-color: var(--gray-200);
+}
+
+/* Theme Toggle Button Styles */
+#theme-toggle {
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+  transition: all var(--transition-fast);
+}
+
+#theme-toggle:hover {
+  background: var(--gray-200);
+  color: var(--gray-900);
+  border-color: var(--gray-300);
+}
+
+[data-theme="dark"] #theme-toggle {
+  background: var(--gray-200);
+  color: var(--gray-700);
+  border-color: var(--gray-300);
+}
+
+[data-theme="dark"] #theme-toggle:hover {
+  background: var(--gray-300);
+  color: var(--gray-900);
+  border-color: var(--gray-400);
+}
+
+/* Theme-Specific Icon Animations */
+#theme-icon {
+  transition: transform var(--transition-normal);
+}
+
+#theme-toggle:hover #theme-icon {
+  transform: rotate(180deg);
+}
+
+/* Auto Theme Detection */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Auto-apply dark theme variables if no explicit theme set */
+    --gray-50: #1f2937;
+    --gray-100: #374151;
+    --gray-200: #4b5563;
+    --gray-300: #6b7280;
+    --gray-400: #9ca3af;
+    --gray-500: #d1d5db;
+    --gray-600: #e5e7eb;
+    --gray-700: #f3f4f6;
+    --gray-800: #f9fafb;
+    --gray-900: #ffffff;
+    
+    --holiday-bg: #7f1d1d;
+    --holiday-text: #f87171;
+    --holiday-border: #b91c1c;
+  }
+}
+
+/* Theme Transition Animation */
+* {
+  transition: 
+    background-color var(--transition-normal),
+    border-color var(--transition-normal),
+    color var(--transition-normal);
+}
+
+/* Disable transitions during theme switch */
+.theme-transitioning * {
+  transition: none !important;
+}
+
+/* Ensure smooth theme switching */
+body {
+  transition: background var(--transition-normal), color var(--transition-normal);
+}
+
+/* High Contrast Theme Support */
+@media (prefers-contrast: high) {
+  :root {
+    --primary: #0000ff;
+    --primary-dark: #000080;
+    --danger: #ff0000;
+    --warning: #ff8000;
+    --success: #008000;
+    --gray-50: #ffffff;
+    --gray-100: #f0f0f0;
+    --gray-200: #e0e0e0;
+    --gray-300: #c0c0c0;
+    --gray-400: #808080;
+    --gray-500: #606060;
+    --gray-600: #404040;
+    --gray-700: #202020;
+    --gray-800: #101010;
+    --gray-900: #000000;
+  }
+  
+  /* High contrast buttons */
+  .btn {
+    border: 2px solid;
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .btn-primary {
+    background: #0000ff !important;
+    color: #ffffff !important;
+    border-color: #0000ff !important;
+  }
+  
+  .btn-secondary {
+    background: #ff8000 !important;
+    color: #000000 !important;
+    border-color: #ff8000 !important;
+  }
+  
+  .btn-danger {
+    background: #ff0000 !important;
+    color: #ffffff !important;
+    border-color: #ff0000 !important;
+  }
+  
+  .btn-ghost {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+}
+
+/* Seasonal Theme Variables (Optional Extension) */
+:root[data-season="spring"] {
+  --primary: #22c55e;
+  --primary-dark: #16a34a;
+  --secondary: #84cc16;
+  --accent: #a3e635;
+}
+
+:root[data-season="summer"] {
+  --primary: #f59e0b;
+  --primary-dark: #d97706;
+  --secondary: #eab308;
+  --accent: #facc15;
+}
+
+:root[data-season="autumn"] {
+  --primary: #ea580c;
+  --primary-dark: #dc2626;
+  --secondary: #f97316;
+  --accent: #fb923c;
+}
+
+:root[data-season="winter"] {
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --secondary: #6366f1;
+  --accent: #8b5cf6;
+}
+
+/* Theme-specific Notification Styles */
+[data-theme="dark"] .notification {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .help-button {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Brand Icon Theme Adjustments */
+[data-theme="dark"] .brand-icon {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+/* Week Display Theme Adjustments */
+[data-theme="dark"] .week-display {
+  color: var(--gray-600);
+}
+
+/* Mode Indicator Theme Adjustments */
+[data-theme="dark"] .mode-indicator.view-mode {
+  background: var(--primary);
+  color: white;
+}
+
+[data-theme="dark"] .mode-indicator.build-mode {
+  background: var(--success);
+  color: white;
+}
+
+/* Theme-Specific Focus States */
+[data-theme="dark"] *:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Print Theme Override */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .btn {
+    background: white !important;
+    color: black !important;
+    border: 1px solid black !important;
+  }
+}
+
+/* Theme Storage Indicator */
+.theme-saved {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: var(--success);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all var(--transition-normal);
+  z-index: 1001;
+}
+
+.theme-saved.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Theme Switch Animation */
+@keyframes themeSwitch {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(0.8);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+.theme-switching {
+  animation: themeSwitch 0.3s ease-in-out;
+}
+
+/* Theme-specific Error States */
+[data-theme="dark"] .error-display {
+  background: var(--danger);
+  color: white;
+}
+
+[data-theme="dark"] .error-dismiss {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .error-dismiss:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Theme-specific Loading States */
+[data-theme="dark"] .loading-overlay {
+  background: rgba(31, 41, 55, 0.9);
+}
+
+[data-theme="dark"] .loading-text {
+  color: var(--gray-600);
+}
+
+/* Accessibility: Respect reduced motion in theme transitions */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+  
+  #theme-icon {
+    transition: none !important;
+  }
+  
+  .theme-switching {
+    animation: none !important;
+  }
+  
+  .theme-saved {
+    transition: none !important;
+  }
+}
+
+/* Theme-specific Category Header Colors for Dark Mode */
+[data-theme="dark"] .category-header {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+  color: #dbeafe;
+}
+
+[data-theme="dark"] .category-header:hover {
+  background: rgba(30, 58, 138, 0.8) !important;
+}
+
+/* Lock List Theme Adjustments */
+[data-theme="dark"] #lock-list .item-card {
+  background: var(--warning);
+  color: var(--gray-900);
+}
+
+[data-theme="dark"] #lock-list .remove-btn {
+  background: white;
+  color: var(--warning);
+}
+
+[data-theme="dark"] #lock-list .remove-btn:hover {
+  background: var(--gray-100);
+}
+
+/* Build Mode Visual Indicators Theme Adjustments */
+[data-theme="dark"] .build-mode .clickable:hover {
+  border-color: var(--primary);
+}
+
+/* Skill Level 0 Theme Adjustments */
+[data-theme="dark"] .skill-select option[value="0"] {
+  color: var(--danger);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Theme-specific Empty State */
+[data-theme="dark"] .empty-state {
+  color: var(--gray-500);
+}
+
+[data-theme="dark"] .empty-state .material-icons {
+  color: var(--gray-600);
+}

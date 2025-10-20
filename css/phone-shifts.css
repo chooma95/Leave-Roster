@@ -1,0 +1,527 @@
+/* phone-shifts.css - Phone coverage specific styling */
+
+/* ENHANCED SHIFT COLORS - EXACT MATCH TO SCREENSHOT */
+.shift-early,
+.shift-early .assignment-cell,
+.early-shift,
+.early-shift-cell {
+  background: linear-gradient(135deg, #fef08a, #fde047) !important;
+  color: #854d0e !important;
+  border: 1px solid #f59e0b;
+}
+
+.shift-late,
+.shift-late .assignment-cell,
+.late-shift,
+.late-shift-cell {
+  background: linear-gradient(135deg, #86efac, #4ade80) !important;
+  color: #166534 !important;
+  border: 1px solid #22c55e;
+}
+
+.shift-leave,
+.shift-leave .assignment-cell,
+.planned-leave,
+.leave-cell {
+  background: linear-gradient(135deg, #fdba74, #fb923c) !important;
+  color: #9a3412 !important;
+  border: 1px solid #ea580c;
+}
+
+/* Phone Shift Cell Specific Styles */
+.phone-shift-cell {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-height: 2rem;
+}
+
+.phone-shift-cell:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+/* Phone Shift Content */
+.phone-shift {
+  margin: 2px 0;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1.2;
+  position: relative;
+  padding-right: 1.5rem; /* Make room for swap button */
+}
+
+.shift-label {
+  font-weight: bold;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.shift-assignment {
+  font-size: 0.7rem;
+}
+
+/* Phone Staff Items */
+.phone-staff-item {
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  padding: 1px 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 2px;
+  line-height: 1.2;
+}
+
+.phone-leave-item {
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-medium);
+  padding: 2px 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+/* Leave Display in Main Grid */
+.leave-note {
+    font-size: 0.7rem;
+    color: var(--warning);
+    margin-top: 2px;
+    font-style: italic;
+    background: rgba(245, 158, 11, 0.1);
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
+/* Current Leave Display in Modal */
+.current-leave {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
+}
+
+.current-leave h3 {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+}
+
+.current-leave p {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    margin-bottom: 0.25rem;
+}
+
+.current-leave p:last-child {
+    margin-bottom: 0;
+}
+
+/* Shift Section Styles in Modals */
+.shift-section {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  background: var(--gray-50);
+}
+
+.shift-section h3 {
+  margin-bottom: var(--spacing-md);
+  color: var(--gray-900);
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  border-bottom: 1px solid var(--gray-200);
+  padding-bottom: var(--spacing-sm);
+}
+
+.phone-shifts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Swap Button Styles */
+.swap-icon {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.phone-coverage-cell:hover .swap-icon,
+.phone-shift:hover .swap-icon {
+  opacity: 1;
+}
+
+.swap-icon:hover {
+  background: var(--primary-dark);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Swapped Out Staff Styling */
+.swapped-out {
+  text-decoration: line-through;
+  color: var(--gray-500);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* Shift Assignment with Leave Indicator */
+.shift-assignment .leave-indicator {
+    font-size: 0.65rem;
+    color: var(--warning);
+    font-style: italic;
+}
+
+/* Add Assignment Button */
+.add-assignment-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.phone-roster-cell:hover .add-assignment-btn {
+  opacity: 1;
+}
+
+.add-assignment-btn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.1);
+}
+
+/* Push Tuesday Button */
+.push-tuesday-btn {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-weight: var(--font-weight-bold);
+    font-size: 0.75rem;
+    opacity: 0;
+}
+
+.assignment-cell:hover .push-tuesday-btn {
+    opacity: 1;
+}
+
+.push-tuesday-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark), #1e40af);
+    transform: scale(1.1);
+}
+
+/* Rotation Status Indicators */
+.rotation-status {
+  font-size: 0.6rem;
+  padding: 1px 3px;
+  border-radius: 2px;
+  margin-left: 4px;
+}
+
+.rotation-off {
+  background: var(--gray-300);
+  color: var(--gray-700);
+}
+
+.rotation-available {
+  background: var(--success);
+  color: white;
+}
+
+.rotation-off {
+    font-size: 0.65rem;
+    background: var(--gray-200);
+    color: var(--gray-600);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    margin-left: 0.5rem;
+}
+
+/* Remove Swap Button */
+.remove-swap {
+    background: var(--danger);
+    color: white;
+}
+
+.remove-swap:hover {
+    background: #dc2626;
+}
+
+/* Hover Effects for Shift Cells */
+.phone-roster-cell.early-shift:hover {
+  background: linear-gradient(135deg, #fde047, #facc15);
+}
+
+.phone-roster-cell.late-shift:hover {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+}
+
+.phone-roster-cell.planned-leave:hover {
+  background: linear-gradient(135deg, #fb923c, #f97316);
+}
+
+.leave-cell:hover {
+  background: var(--warning) !important;
+  transform: scale(1.02);
+}
+
+/* Responsive Phone Shift Styles */
+@media (max-width: 1200px) {
+  .phone-shift {
+    font-size: 0.6rem;
+    padding: 2px 4px;
+  }
+  
+  .phone-staff-item,
+  .phone-leave-item {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .phone-staff-item,
+  .phone-leave-item {
+    font-size: 0.6rem;
+    padding: 1px 2px;
+  }
+}
+
+/* Dark Theme Phone Shift Colors */
+[data-theme="dark"] .shift-early,
+[data-theme="dark"] .shift-early .assignment-cell,
+[data-theme="dark"] .early-shift,
+[data-theme="dark"] .early-shift-cell {
+  background: #ca8a04 !important;
+  color: #1f2937 !important;
+}
+
+[data-theme="dark"] .shift-late,
+[data-theme="dark"] .shift-late .assignment-cell,
+[data-theme="dark"] .late-shift,
+[data-theme="dark"] .late-shift-cell {
+  background: #16a34a !important;
+  color: #1f2937 !important;
+}
+
+[data-theme="dark"] .shift-leave,
+[data-theme="dark"] .shift-leave .assignment-cell,
+[data-theme="dark"] .planned-leave,
+[data-theme="dark"] .leave-cell {
+  background: #ea580c !important;
+  color: #fed7aa !important;
+}
+
+[data-theme="dark"] .phone-staff-item,
+[data-theme="dark"] .phone-leave-item {
+  background: rgba(31, 41, 55, 0.8);
+  color: var(--gray-900);
+}
+
+[data-theme="dark"] .rotation-off {
+  background: var(--gray-600);
+  color: var(--gray-200);
+}
+
+[data-theme="dark"] .leave-note {
+    background: rgba(245, 158, 11, 0.2);
+}
+
+[data-theme="dark"] .current-leave {
+    background: var(--gray-100);
+    border-color: var(--gray-200);
+}
+
+/* Dark theme hover states */
+[data-theme="dark"] .phone-roster-cell.early-shift:hover {
+  background: linear-gradient(135deg, #d97706, #b45309) !important;
+}
+
+[data-theme="dark"] .phone-roster-cell.late-shift:hover {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+}
+
+[data-theme="dark"] .phone-roster-cell.planned-leave:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+}
+
+/* High Contrast Mode for Phone Shifts */
+@media (prefers-contrast: high) {
+  .shift-early,
+  .early-shift,
+  .phone-roster-cell.early-shift {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+  }
+  
+  .shift-late,
+  .late-shift,
+  .phone-roster-cell.late-shift {
+    background: #00ff00 !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+  }
+  
+  .shift-leave,
+  .planned-leave,
+  .phone-roster-cell.planned-leave {
+    background: #ff8000 !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+  }
+}
+
+/* Print Styles for Phone Shifts */
+@media print {
+  .early-shift,
+  .late-shift,
+  .planned-leave {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .phone-roster-cell {
+    border: 1px solid #000;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .push-tuesday-btn,
+  .swap-icon,
+  .add-assignment-btn {
+    display: none !important;
+  }
+  
+  .swapped-out {
+    text-decoration: line-through !important;
+  }
+  
+  .leave-note {
+    font-size: 0.6rem;
+    border: 1px solid var(--warning);
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* Loading States for Phone Assignments */
+.loading-assignment {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-assignment::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: loading-shimmer 1.5s infinite;
+}
+
+[data-theme="dark"] .loading-assignment::after {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.4), transparent);
+}
+
+@keyframes loading-shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Empty State for Personal View */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--gray-500);
+}
+
+.empty-state .material-icons {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Swap Form Styles */
+.swap-form {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* Leave Planning Form Styles */
+.leave-planning-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Month Navigation Styles */
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+/* Phone Coverage Cell Clickable State */
+.phone-coverage-cell {
+  text-align: center;
+}
+
+/* Assignment Cell Relative Positioning for Buttons */
+.assignment-cell {
+    position: relative;
+}
+
+/* Build Mode Visual Indicators for Phone Shifts */
+.build-mode .phone-shift-cell {
+    border: 1px dashed transparent;
+    transition: border-color var(--transition-fast);
+}
+
+.build-mode .phone-shift-cell:hover {
+    border-color: var(--primary);
+}

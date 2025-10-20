@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Work Allocation Roster",
+  "version": "3.1.0",
+  "description": "Professional collaborative tool for managing weekly work allocation, shifts, and leave with NSW public holiday support and advanced features.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "alarms"
+  ],
+  "action": {
+    "default_title": "Open Work Allocation Roster"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["styles.css", "*.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "minimum_chrome_version": "88"
+}

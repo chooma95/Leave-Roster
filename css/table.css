@@ -1,0 +1,801 @@
+/* table.css - Roster table, categories, assignments */
+
+/* ENHANCED TABLE STYLES - EXACT LAYOUT FROM SCREENSHOT */
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  table-layout: fixed;
+  border: 1px solid #e5e7eb;
+}
+
+/* FIXED COLUMN WIDTHS - EXACT MATCH TO SCREENSHOT */
+.roster-table th:first-child,
+.roster-table td:first-child {
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+}
+
+.roster-table th:nth-child(2),
+.roster-table td:nth-child(2) {
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  text-align: center;
+}
+
+.roster-table th:nth-child(n+3),
+.roster-table td:nth-child(n+3) {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+}
+
+/* TABLE HEADER STYLING - EXACT MATCH TO SCREENSHOT */
+.table-header {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  border-bottom: 2px solid #1d4ed8;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-header th {
+  padding: 12px 8px;
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  vertical-align: middle;
+}
+
+.table-header th:first-child {
+  text-align: left;
+  border-right: none;
+  background: linear-gradient(135deg, #1f2937, #374151);
+  padding-left: 16px;
+}
+
+.table-header th:nth-child(2) {
+  width: 80px;
+  font-size: 0.7rem;
+}
+
+.table-header th.holiday {
+  background: linear-gradient(135deg, var(--holiday-bg), #fecaca);
+  color: var(--holiday-text);
+  border-bottom-color: var(--holiday-text);
+}
+
+/* Day Header Content */
+.day-header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.day-name {
+  font-weight: bold;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.day-date {
+  font-size: 0.65rem;
+  opacity: 0.9;
+}
+
+/* WOH COLUMN STYLING */
+.woh-column {
+  text-align: center;
+  font-size: 0.7rem;
+  padding: 8px 4px;
+  background: #f8fafc;
+  border-right: 1px solid #e5e7eb;
+}
+
+.woh-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  min-height: 40px;
+  justify-content: center;
+}
+
+.woh-display:hover {
+  background-color: var(--gray-100);
+}
+
+.count-display {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--gray-900);
+}
+
+.date-display {
+  font-size: 0.7rem;
+  color: var(--gray-600);
+}
+
+/* CATEGORY HEADER ROWS - EXACT COLORS FROM SCREENSHOT */
+.category-header-row {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.category-header-row.category-cau td {
+  background: #ddd6fe !important; /* Purple header - exact match */
+  color: #5b21b6 !important;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-right: 1px solid rgba(91,33,182,0.2);
+}
+
+.category-header-row.category-ctp td {
+  background: #bbf7d0 !important; /* Green header - exact match */
+  color: #15803d !important;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-right: 1px solid rgba(21,128,61,0.2);
+}
+
+.category-header-row.category-info td {
+  background: #fed7aa !important; /* Orange header - exact match */
+  color: #c2410c !important;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-right: 1px solid rgba(194,65,12,0.2);
+}
+
+.category-header-row.category-roi td {
+  background: #bfdbfe !important; /* Blue header - exact match */
+  color: #1d4ed8 !important;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-right: 1px solid rgba(29,78,216,0.2);
+}
+
+.category-header-row.category-printing td {
+  background: #d1d5db !important; /* Grey header - exact match */
+  color: #374151 !important;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-right: 1px solid rgba(55,65,81,0.2);
+}
+
+/* TASK ROWS - LIGHTER COLORS, EXACT MATCH TO SCREENSHOT */
+.task-row.category-cau td,
+.category-cau td {
+  background-color: #f3e8ff !important; /* Light purple - exact match */
+  color: #581c87 !important;
+  border-right: 1px solid rgba(88,28,135,0.1);
+  border-bottom: 1px solid rgba(88,28,135,0.1);
+}
+
+.task-row.category-ctp td,
+.category-ctp td {
+  background-color: #dcfce7 !important; /* Light green - exact match */
+  color: #166534 !important;
+  border-right: 1px solid rgba(22,101,52,0.1);
+  border-bottom: 1px solid rgba(22,101,52,0.1);
+}
+
+.task-row.category-info td,
+.category-info td {
+  background-color: #ffedd5 !important; /* Light orange - exact match */
+  color: #9a3412 !important;
+  border-right: 1px solid rgba(154,52,18,0.1);
+  border-bottom: 1px solid rgba(154,52,18,0.1);
+}
+
+.task-row.category-roi td,
+.category-roi td {
+  background-color: #dbeafe !important; /* Light blue - exact match */
+  color: #1e40af !important;
+  border-right: 1px solid rgba(30,64,175,0.1);
+  border-bottom: 1px solid rgba(30,64,175,0.1);
+}
+
+.task-row.category-printing td,
+.category-printing td {
+  background-color: #f3f4f6 !important; /* Light grey - exact match */
+  color: #374151 !important;
+  border-right: 1px solid rgba(55,65,81,0.1);
+  border-bottom: 1px solid rgba(55,65,81,0.1);
+}
+
+/* HOVER EFFECTS FOR CATEGORY ROWS */
+.task-row.category-cau:hover td,
+.category-cau:hover td {
+  background-color: #e9d5ff !important;
+}
+
+.task-row.category-ctp:hover td,
+.category-ctp:hover td {
+  background-color: #bbf7d0 !important;
+}
+
+.task-row.category-info:hover td,
+.category-info:hover td {
+  background-color: #fed7aa !important;
+}
+
+.task-row.category-roi:hover td,
+.category-roi:hover td {
+  background-color: #bfdbfe !important;
+}
+
+.task-row.category-printing:hover td,
+.category-printing:hover td {
+  background-color: #d1d5db !important;
+}
+
+/* TASK ROW STYLES */
+.task-row {
+  transition: all var(--transition-fast);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.task-row:hover {
+  opacity: 0.9;
+}
+
+.task-row td {
+  padding: 10px 8px;
+  border-right: 1px solid var(--gray-200);
+  vertical-align: middle;
+}
+
+.task-row td:first-child {
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  border-right: none;
+  padding-left: var(--spacing-md);
+}
+
+/* Task Name Cell Styling */
+.task-name-cell {
+  padding: 10px 16px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.task-name-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-title {
+  font-weight: 500;
+}
+
+.task-skill-info {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+/* Category Section Management */
+.category-section {
+  transition: all 0.3s ease;
+}
+
+.category-section.collapsed {
+  display: none;
+}
+
+/* Category Header Content */
+.category-header-cell {
+  padding: 10px 16px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.category-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.category-title {
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.collapse-icon {
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.category-header-row.collapsed .collapse-icon {
+  transform: rotate(-90deg);
+}
+
+.category-header-day-cell {
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  min-height: 40px;
+  vertical-align: middle;
+  position: relative;
+}
+
+.category-header-day-cell.clickable:hover {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  cursor: pointer;
+}
+
+/* ENHANCED TRIAGE HEADER */
+.triage-header {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important;
+  color: #1e3a8a !important;
+  font-weight: var(--font-weight-bold) !important;
+  cursor: pointer !important;
+  user-select: none;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.triage-header:hover {
+  background: linear-gradient(135deg, #bfdbfe, #93c5fd) !important;
+}
+
+.triage-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.triage-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.triage-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.triage-header:hover .triage-actions {
+  opacity: 1;
+}
+
+/* Priority Task Indicators */
+.priority-1, .priority-2 {
+  font-size: 0.6rem;
+  padding: 1px 3px;
+  border-radius: 2px;
+  font-weight: bold;
+  margin-left: 2px;
+  display: inline-block;
+}
+
+.priority-1 {
+  background: var(--danger);
+  color: white;
+}
+
+.priority-2 {
+  background: var(--warning);
+  color: white;
+}
+
+/* Assignment Cell Styling */
+.assignment-cell {
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  min-height: 2.5rem;
+  transition: all var(--transition-fast);
+  padding: 8px 6px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  vertical-align: middle;
+}
+
+.assignment-cell:hover {
+  opacity: 0.8;
+}
+
+.assignment-cell.clickable:hover {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  cursor: pointer;
+}
+
+.assignment-cell.holiday {
+  background: var(--holiday-bg) !important;
+  color: var(--holiday-text) !important;
+  cursor: not-allowed;
+  border-color: var(--holiday-border);
+  opacity: 0.6;
+}
+
+.assignment-cell .assignment-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px;
+}
+
+.assignment-content, 
+.assignment-placeholder,
+.triage-content,
+.triage-placeholder {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.triage-assignments {
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 2px;
+  padding: 1px 3px;
+  margin-bottom: 2px;
+}
+
+.task-assignments {
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+}
+
+.assignment-placeholder,
+.triage-placeholder {
+  color: var(--gray-400);
+  font-style: italic;
+  font-size: 0.7rem;
+}
+
+.assignment-content,
+.triage-content {
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+}
+
+.triage-content {
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary);
+}
+
+.triage-placeholder {
+  color: var(--gray-400);
+  font-style: italic;
+  font-size: 0.7rem;
+}
+
+/* ENHANCED FOOTER/SHIFT STYLES */
+.table-footer {
+  font-weight: var(--font-weight-bold);
+  background: #f8fafc;
+  border-top: 2px solid #e5e7eb;
+}
+
+.shift-row {
+  font-weight: var(--font-weight-bold);
+}
+
+.shift-row td {
+  padding: var(--spacing-md);
+  text-align: center;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.shift-row td:first-child {
+  text-align: left;
+}
+
+/* Phone Coverage Footer Styling */
+.phone-coverage-row td {
+  padding: 12px 8px;
+  font-weight: 500;
+  border-right: 1px solid #e5e7eb;
+}
+
+.phone-coverage-header {
+  background: linear-gradient(135deg, #1f2937, #374151);
+  color: white;
+  text-align: left;
+  padding-left: 16px;
+  font-weight: bold;
+}
+
+.phone-coverage-cell {
+  text-align: center;
+}
+
+/* Skills Matrix Table Styles */
+.skills-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: 1rem;
+}
+
+.skills-matrix-table th,
+.skills-matrix-table td {
+  padding: 8px 6px;
+  border: 1px solid var(--gray-300);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.skills-matrix-table th {
+  background: var(--gray-100);
+  font-weight: var(--font-weight-semibold);
+  color: var(--gray-900);
+  font-size: 0.7rem;
+}
+
+.skills-matrix-table .staff-name {
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  background: var(--gray-50);
+  min-width: 120px;
+}
+
+.skills-matrix-table .task-header {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  min-width: 40px;
+  max-width: 60px;
+  font-size: 0.65rem;
+  padding: 6px 4px;
+}
+
+.skill-cell {
+  padding: 4px;
+}
+
+.skill-select {
+  width: 100%;
+  font-size: 0.7rem;
+  padding: 2px 4px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  background: white;
+}
+
+.skill-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Leave Roster Table Styles */
+.leave-roster-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: 1rem;
+}
+
+.leave-roster-table th,
+.leave-roster-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--gray-300);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.leave-roster-table th {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-weight: var(--font-weight-semibold);
+  font-size: 0.75rem;
+}
+
+.leave-roster-table td:first-child,
+.leave-roster-table td:nth-child(2) {
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Responsive Table Adjustments */
+@media (max-width: 1400px) {
+  .roster-table th:first-child,
+  .roster-table td:first-child {
+    width: 280px;
+    min-width: 280px;
+  }
+  
+  .roster-table th:nth-child(n+3),
+  .roster-table td:nth-child(n+3) {
+    width: 120px;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .roster-table {
+    font-size: 0.7rem;
+  }
+  
+  .roster-table th:first-child,
+  .roster-table td:first-child {
+    width: 250px;
+    min-width: 250px;
+  }
+  
+  .roster-table th:nth-child(n+3),
+  .roster-table td:nth-child(n+3) {
+    width: 100px;
+    min-width: 100px;
+  }
+  
+  .task-row td,
+  .table-header th {
+    padding: var(--spacing-sm) var(--spacing-xs);
+  }
+  
+  .assignment-cell {
+    padding: 6px 4px;
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .roster-table {
+    font-size: 0.75rem;
+  }
+}
+
+/* Dark Theme Table Styles */
+[data-theme="dark"] .table-header {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+  color: #dbeafe;
+}
+
+[data-theme="dark"] .table-header th {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+[data-theme="dark"] .table-header th:first-child {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+/* Dark theme category colors */
+[data-theme="dark"] .task-row.category-cau td,
+[data-theme="dark"] .category-cau td {
+  background: #065f46 !important;
+  color: #d1fae5 !important;
+}
+
+[data-theme="dark"] .category-header-row.category-cau td {
+  background: #047857 !important;
+  color: #d1fae5 !important;
+}
+
+[data-theme="dark"] .task-row.category-ctp td,
+[data-theme="dark"] .category-ctp td {
+  background: #92400e !important;
+  color: #fed7aa !important;
+}
+
+[data-theme="dark"] .category-header-row.category-ctp td {
+  background: #b45309 !important;
+  color: #fed7aa !important;
+}
+
+[data-theme="dark"] .task-row.category-info td,
+[data-theme="dark"] .category-info td {
+  background: #b91c1c !important;
+  color: #fecaca !important;
+}
+
+[data-theme="dark"] .category-header-row.category-info td {
+  background: #dc2626 !important;
+  color: #fecaca !important;
+}
+
+[data-theme="dark"] .task-row.category-roi td,
+[data-theme="dark"] .category-roi td {
+  background: #0369a1 !important;
+  color: #bae6fd !important;
+}
+
+[data-theme="dark"] .category-header-row.category-roi td {
+  background: #0284c7 !important;
+  color: #bae6fd !important;
+}
+
+[data-theme="dark"] .task-row.category-printing td,
+[data-theme="dark"] .category-printing td {
+  background: #57534e !important;
+  color: #f5f5f4 !important;
+}
+
+[data-theme="dark"] .category-header-row.category-printing td {
+  background: #78716c !important;
+  color: #f5f5f4 !important;
+}
+
+[data-theme="dark"] .triage-header {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af) !important;
+  color: #dbeafe !important;
+}
+
+[data-theme="dark"] .triage-header:hover {
+  background: linear-gradient(135deg, #1e40af, #2563eb) !important;
+}
+
+/* Print Styles for Tables */
+@media print {
+  .roster-table {
+    font-size: 0.6rem;
+    page-break-inside: avoid;
+  }
+  
+  .task-row td,
+  .category-header-row td {
+    padding: 4px 6px;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .table-header th {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    position: static !important;
+  }
+  
+  /* Print-specific category colors */
+  .task-row.category-cau td {
+    background: #f3e8ff !important;
+    color: #581c87 !important;
+  }
+  
+  .task-row.category-ctp td {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+  }
+  
+  .task-row.category-info td {
+    background: #ffedd5 !important;
+    color: #9a3412 !important;
+  }
+  
+  .task-row.category-roi td {
+    background: #dbeafe !important;
+    color: #1e40af !important;
+  }
+  
+  .task-row.category-printing td {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+  }
+}
