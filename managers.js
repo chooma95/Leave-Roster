@@ -80,7 +80,7 @@ export class RotationManager {
     initialize() {
         if (Object.keys(this.shiftRotations).length > 0) return;
         
-        const allStaff = this.staff.filter(s => (s.workDays || []).length > 1);
+        const allStaff = this.staff.filter(s => ScheduleUtils.getWorkDaysCount(s) > 1);
         const rotationOrder = [...allStaff].sort(() => Math.random() - 0.5);
         
         rotationOrder.forEach((staffMember, index) => {
@@ -449,7 +449,7 @@ export class AssignmentGenerator {
             .map(staff => ({
                 ...staff,
                 totalShifts: assignmentTracker[staff.id].totalShifts,
-                workDayCount: staff.workDays.length
+                workDayCount: ScheduleUtils.getWorkDaysCount(staff)
             }))
             .sort((a, b) => {
                 if (a.totalShifts !== b.totalShifts) {
@@ -1149,7 +1149,7 @@ export class AssignmentGenerator {
             const availableStaff = this.staff.filter(staff => {
                 const availableDays = workingDays.filter(date => {
                     const dayName = DateUtils.getDayName(date);
-                    const worksThisDay = staff.workDays.includes(dayName);
+                    const worksThisDay = ScheduleUtils.isWorkingDay(staff, date);
                     const isOnLeave = this.getStaffLeave(staff.id, date);
                     return worksThisDay && !isOnLeave;
                 }).length;
@@ -1310,7 +1310,7 @@ export class AssignmentGenerator {
         const dayName = DateUtils.getDayName(date);
         
         const availableStaff = this.staff.filter(s => 
-            (s.workDays || []).includes(dayName) && 
+            ScheduleUtils.isWorkingDay(s, date) && 
             !this.getStaffLeave(s.id, date)
         );
         
@@ -1757,8 +1757,7 @@ export class ValidationUtils {
         return staff && 
                typeof staff.id === 'string' && 
                typeof staff.name === 'string' && 
-               Array.isArray(staff.workDays) &&
-               staff.workDays.every(day => CONFIG.WORK_DAYS.includes(day));
+               ScheduleUtils.isValidSchedule(staff);
     }
 
     static validateTask(task) {

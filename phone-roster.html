@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Shift Roster Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-solid: #667eea;
+            --primary-dark: #5568d3;
+            --primary-light: #f0f4ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --red-600: #dc2626;
+            --green-500: #10b981;
+            --blue-600: #2563eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--gray-900);
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--gray-50);
+            border-radius: 0.75rem;
+            border: 2px solid var(--gray-200);
+        }
+
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            border-radius: 0.5rem;
+            color: white;
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        .control-panel h3 {
+            margin-bottom: 1.25rem;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .form-input, .form-select {
+            padding: 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-solid);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            border: none;
+            border-radius: 0.625rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9375rem;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-solid);
+            border: 2px solid var(--primary-solid);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .staff-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .staff-card {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .staff-card:hover {
+            border-color: var(--primary-solid);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .staff-info h4 {
+            font-size: 1rem;
+            color: var(--gray-900);
+            margin-bottom: 0.375rem;
+        }
+
+        .staff-details {
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active { background: #d1fae5; color: #065f46; }
+        .status-leave { background: #fef3c7; color: #92400e; }
+        .status-inactive { background: #fee2e2; color: #991b1b; }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-600);
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            color: var(--primary-solid);
+            background: var(--primary-light);
+        }
+
+        .roster-table-container {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        .roster-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .roster-table th {
+            background: var(--gray-900);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .roster-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .roster-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .week-header {
+            background: var(--primary-light) !important;
+        }
+
+        .week-date-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            color: var(--primary-solid);
+        }
+
+        .week-date-range {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .shift-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+
+        .shift-slot {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .shift-slot.early {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        .shift-slot.late {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #60a5fa;
+        }
+
+        .shift-slot .material-icons {
+            font-size: 1.125rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal {
+            background: white;
+            border-radius: 1rem;
+            padding: 0;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(90vh - 160px);
+        }
+
+        .period-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 0.875rem;
+            background: var(--primary-light);
+            color: var(--primary-solid);
+            border-radius: 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            border: 1px solid var(--primary-solid);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--error);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .stats-row {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+
+            .staff-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="material-icons" style="font-size: 2rem;">phone_in_talk</span>
+                Phone Shift Roster Generator
+            </div>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">group</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Staff</div>
+                        <div class="stat-value" id="stat-staff">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">calendar_today</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Weeks</div>
+                        <div class="stat-value" id="stat-weeks">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">schedule</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Shifts</div>
+                        <div class="stat-value" id="stat-shifts">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Period Selection -->
+        <div class="control-panel">
+            <h3>
+                <span class="material-icons">date_range</span>
+                Roster Period
+            </h3>
+            
+            <div class="control-row">
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">event</span>
+                        Select Month
+                    </label>
+                    <input type="month" id="period-month" class="form-input" onchange="updateMonthPeriod()">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">event</span>
+                        Start Date (First Tuesday)
+                    </label>
+                    <input type="date" id="period-start" class="form-input" readonly style="background: var(--gray-100);">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">event_available</span>
+                        Weeks in Period
+                    </label>
+                    <input type="number" id="period-weeks" class="form-input" readonly style="background: var(--gray-100);">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">event_note</span>
+                        End Date (Last Monday)
+                    </label>
+                    <input type="date" id="period-end" class="form-input" readonly style="background: var(--gray-100);">
+                </div>
+            </div>
+            
+            <div id="previous-periods" style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--gray-200); display: none;">
+                <label style="font-weight: 600; font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.75rem; display: block;">Previous Periods:</label>
+                <div id="previous-periods-list" style="display: flex; flex-wrap: wrap; gap: 0.625rem;"></div>
+            </div>
+        </div>
+
+        <!-- Staff Management -->
+        <div class="control-panel">
+            <h3>
+                <span class="material-icons">settings</span>
+                Staff Configuration
+            </h3>
+            
+            <div class="control-row">
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">person_add</span>
+                        Staff Name
+                    </label>
+                    <input type="text" id="staff-name" class="form-input" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">schedule</span>
+                        Schedule Type
+                    </label>
+                    <select id="schedule-type" class="form-select" onchange="toggleScheduleType()">
+                        <option value="fixed">Fixed Schedule (Same days every week)</option>
+                        <option value="alternating">Alternating Schedule (Week 1 / Week 2)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-row" id="fixed-schedule">
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">date_range</span>
+                        Work Days
+                    </label>
+                    <div style="display: flex; gap: 0.625rem; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="tuesday" class="work-day-checkbox"> Tue
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="wednesday" class="work-day-checkbox"> Wed
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="thursday" class="work-day-checkbox"> Thu
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="friday" class="work-day-checkbox"> Fri
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="monday" class="work-day-checkbox"> Mon
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-row" id="alternating-schedule" style="display: none;">
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">looks_one</span>
+                        Week 1 Work Days
+                    </label>
+                    <div style="display: flex; gap: 0.625rem; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="tuesday" class="week1-checkbox"> Tue
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="wednesday" class="week1-checkbox"> Wed
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="thursday" class="week1-checkbox"> Thu
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="friday" class="week1-checkbox"> Fri
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="monday" class="week1-checkbox"> Mon
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">looks_two</span>
+                        Week 2 Work Days
+                    </label>
+                    <div style="display: flex; gap: 0.625rem; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="tuesday" class="week2-checkbox"> Tue
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="wednesday" class="week2-checkbox"> Wed
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="thursday" class="week2-checkbox"> Thu
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="friday" class="week2-checkbox"> Fri
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.375rem; cursor: pointer; padding: 0.5rem 0.875rem; background: var(--gray-100); border-radius: 0.5rem;">
+                            <input type="checkbox" value="monday" class="week2-checkbox"> Mon
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addStaff()">
+                    <span class="material-icons">person_add</span>
+                    Add Staff Member
+                </button>
+            </div>
+
+            <div class="staff-list" id="staff-list"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="control-panel">
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generateRoster()">
+                    <span class="material-icons">auto_awesome</span>
+                    Generate Roster
+                </button>
+                <button class="btn btn-secondary" onclick="exportRoster()">
+                    <span class="material-icons">download</span>
+                    Export to Excel
+                </button>
+            </div>
+        </div>
+
+        <!-- Roster Display -->
+        <div class="roster-table-container">
+            <table class="roster-table" id="roster-table">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Monday</th>
+                    </tr>
+                </thead>
+                <tbody id="roster-tbody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 4rem; color: var(--gray-600);">
+                            <span class="material-icons" style="font-size: 4rem; opacity: 0.3;">calendar_month</span>
+                            <p style="margin-top: 1.5rem; font-size: 1.125rem;">Add staff and generate roster to get started</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Staff Edit Modal -->
+    <div id="staff-edit-modal" class="modal-overlay" style="display: none;" onclick="closeEditModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Manage Staff Status</h2>
+                <button onclick="closeEditModal()" class="icon-btn" style="color: white;">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-staff-id">
+                
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label>Staff Name</label>
+                    <input type="text" id="edit-staff-name" class="form-input" readonly style="background: var(--gray-100);">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label>
+                        <span class="material-icons">assignment_ind</span>
+                        Status
+                    </label>
+                    <select id="edit-staff-status" class="form-select" onchange="toggleLeaveFields()">
+                        <option value="active">Active (Available for shifts)</option>
+                        <option value="leave">On Leave (Temporary absence)</option>
+                        <option value="inactive">Inactive (Left organization)</option>
+                    </select>
+                </div>
+
+                <div id="leave-fields" style="display: none;">
+                    <div class="control-row">
+                        <div class="form-group">
+                            <label>Leave Start Date</label>
+                            <input type="date" id="edit-leave-start" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Leave End Date</label>
+                            <input type="date" id="edit-leave-end" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label>Leave Reason (Optional)</label>
+                        <input type="text" id="edit-leave-reason" class="form-input" placeholder="e.g., Maternity leave, Sabbatical">
+                    </div>
+                </div>
+
+                <div id="inactive-fields" style="display: none;">
+                    <div class="form-group">
+                        <label>End Date (Last working day)</label>
+                        <input type="date" id="edit-inactive-date" class="form-input">
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top: 2rem;">
+                    <button class="btn btn-secondary" onclick="closeEditModal()" style="flex: 1;">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary" onclick="saveStaffEdit()" style="flex: 1;">
+                        <span class="material-icons">save</span>
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Period View Modal -->
+    <div id="period-view-modal" class="modal-overlay" style="display: none;" onclick="closePeriodViewModal()">
+        <div class="modal" onclick="event.stopPropagation()" style="max-width: 90vw; width: 1200px;">
+            <div class="modal-header">
+                <h2 id="period-view-title">Historical Period</h2>
+                <button onclick="closePeriodViewModal()" class="icon-btn" style="color: white;">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div id="period-view-content"></div>
+            </div>
+            <div style="padding: 1rem 1.5rem; border-top: 2px solid var(--gray-200); background: var(--gray-50);">
+                <button class="btn btn-secondary" onclick="closePeriodViewModal()" style="width: 100%;">
+                    <span class="material-icons">close</span>
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="roster-lite.js"></script>
+</body>
+</html>

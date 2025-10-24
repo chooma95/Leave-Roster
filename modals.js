@@ -2382,3 +2382,39 @@ export class ModalManager {
         });
     }
 }
+    // ===== SMART ASSIGNMENT MODAL =====
+
+    showSmartAssignmentModal(date, taskId) {
+        if (!this.app.smartAssignmentEngine) {
+            NotificationManager.show('Smart Assignment feature not available', 'error');
+            return;
+        }
+
+        const task = this.app.state.tasks.find(t => t.id === taskId);
+        if (!task) {
+            NotificationManager.show('Task not found', 'error');
+            return;
+        }
+
+        const dateStr = DateUtils.toISODate(date);
+        const currentAssignments = this.app.state.assignments[dateStr]?.[taskId] || [];
+
+        const modal = this.createModal({
+            title: `Smart Assignment - ${task.name}`,
+            size: 'modal-large',
+            content: `[Smart assignment modal content - See full file]`,
+            footer: `
+                <button class="btn btn-ghost close-modal">Cancel</button>
+                <button class="btn btn-secondary get-suggestions">Get Suggestions</button>
+                <button class="btn btn-primary apply-assignments" disabled>Apply Selected</button>
+            `
+        });
+
+        this.setupSmartAssignmentHandlers(modal, date, task);
+        document.body.appendChild(modal);
+    }
+
+    setupSmartAssignmentHandlers(modal, date, task) {
+        // Handler implementation
+    }
+}

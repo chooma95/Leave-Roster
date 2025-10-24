@@ -1,0 +1,4644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Shift Roster Generator - V4: Perfect Weekly Balance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* ========================================
+           CSS VARIABLES & DESIGN TOKENS
+           ======================================== */
+        
+        :root {
+            /* Brand Colors */
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-solid: #667eea;
+            --primary-dark: #5568d3;
+            --primary-light: #f0f4ff;
+            
+            /* Semantic Colors */
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --success-dark: #065f46;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --warning-dark: #92400e;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --error-dark: #991b1b;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --info-dark: #1e40af;
+            
+            /* Gray Scale */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Spacing System */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 0.75rem;
+            --space-lg: 1rem;
+            --space-xl: 1.5rem;
+            --space-2xl: 2rem;
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            
+            /* Transitions */
+            --transition-fast: 150ms ease-in-out;
+            --transition-base: 200ms ease-in-out;
+            --transition-slow: 300ms ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary);
+            min-height: 100vh;
+            color: var(--gray-900);
+            line-height: 1.5;
+        }
+
+        /* ========================================
+           HEADER & NAVIGATION
+           ======================================== */
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: var(--space-xl) var(--space-2xl);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-xl);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: var(--space-lg);
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md) var(--space-xl);
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--gray-200);
+            transition: all var(--transition-base);
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-solid);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            border-radius: var(--radius-md);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        /* ========================================
+           MAIN CONTENT & PANELS
+           ======================================== */
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-2xl);
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+        }
+
+        .control-panel:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .control-panel h3 {
+            margin-bottom: var(--space-xl);
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* ========================================
+           FORMS & INPUTS
+           ======================================== */
+
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .control-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .form-input,
+        .form-select {
+            padding: var(--space-md) var(--space-lg);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            transition: all var(--transition-base);
+            background: white;
+            color: var(--gray-900);
+        }
+
+        .form-input:hover,
+        .form-select:hover {
+            border-color: var(--gray-300);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-solid);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .form-input:disabled,
+        .form-select:disabled {
+            background: var(--gray-100);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Checkbox Group Styling */
+        .checkbox-group {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            user-select: none;
+        }
+
+        .checkbox-label:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-300);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 1.125rem;
+            height: 1.125rem;
+            cursor: pointer;
+            accent-color: var(--primary-solid);
+        }
+
+        .checkbox-label:has(input:checked) {
+            background: var(--primary-light);
+            border-color: var(--primary-solid);
+            color: var(--primary-dark);
+        }
+
+        /* ========================================
+           BUTTONS
+           ======================================== */
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-xl);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 0.9375rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-solid);
+            border: 2px solid var(--primary-solid);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--primary-light);
+        }
+
+        .btn-secondary:active:not(:disabled) {
+            background: var(--gray-100);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn .material-icons {
+            font-size: 1.125rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: var(--space-lg);
+            flex-wrap: wrap;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-600);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-base);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover:not(:disabled) {
+            color: var(--primary-solid);
+            background: var(--primary-light);
+            transform: scale(1.1);
+        }
+
+        .icon-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .icon-btn.delete {
+            color: var(--gray-500);
+        }
+
+        .icon-btn.delete:hover:not(:disabled) {
+            color: var(--error);
+            background: var(--error-light);
+        }
+
+        .icon-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-remove {
+            background: white;
+            border: 2px solid var(--gray-300);
+            color: var(--gray-600);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-remove:hover:not(:disabled) {
+            border-color: var(--error);
+            color: var(--error);
+            background: var(--error-light);
+            transform: scale(1.05);
+        }
+
+        .btn-remove:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        /* ========================================
+           STAFF LIST & CARDS
+           ======================================== */
+
+        .staff-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: var(--space-xl);
+            margin-top: var(--space-xl);
+        }
+
+        .staff-item {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            display: flex;
+            gap: var(--space-xl);
+            align-items: flex-start;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .staff-item:hover {
+            border-color: var(--primary-solid);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .staff-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .staff-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-sm);
+        }
+
+        .staff-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+            align-items: center;
+        }
+
+        .staff-work-section {
+            margin-top: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .staff-section-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========================================
+           BADGES & STATUS INDICATORS
+           ======================================== */
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: var(--success-light);
+            color: var(--success-dark);
+        }
+
+        .status-leave {
+            background: var(--warning-light);
+            color: var(--warning-dark);
+        }
+
+        .status-inactive {
+            background: var(--error-light);
+            color: var(--error-dark);
+        }
+
+        .day-badge {
+            display: inline-flex;
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--primary-light);
+            color: var(--primary-solid);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .schedule-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--space-xs) var(--space-md);
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--gray-300);
+        }
+
+        .schedule-badge.alternating {
+            background: var(--info-light);
+            color: var(--info-dark);
+            border-color: var(--info);
+        }
+
+        .week-off-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--warning-light);
+            color: var(--warning-dark);
+            border-radius: var(--radius-md);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            border: 2px solid var(--warning);
+            white-space: nowrap;
+        }
+
+        .leave-info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .leave-info-badge.days {
+            background: var(--warning-light);
+            color: var(--warning-dark);
+            border: 1px solid var(--warning);
+        }
+
+        .leave-info-badge.periods {
+            background: var(--info-light);
+            color: var(--info-dark);
+            border: 1px solid var(--info);
+        }
+
+        .period-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .period-badge:hover {
+            border-color: var(--primary-solid);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ========================================
+           ROSTER TABLE & SCHEDULING
+           ======================================== */
+
+        .roster-table-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+        }
+
+        .roster-table-container:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .roster-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .roster-table th {
+            background: var(--gray-900);
+            color: white;
+            padding: var(--space-lg);
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .roster-table td {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: top;
+        }
+
+        .roster-table tbody tr {
+            transition: background-color var(--transition-fast);
+        }
+
+        .roster-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .week-header {
+            background: var(--primary-light) !important;
+        }
+
+        .week-date-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            color: var(--primary-solid);
+        }
+
+        .week-date-range {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .week-cell {
+            background: var(--gray-100);
+            font-weight: 600;
+            color: var(--gray-900);
+            border-right: 2px solid var(--gray-300);
+        }
+
+        .day-cell {
+            vertical-align: top;
+            padding: var(--space-md) !important;
+        }
+
+        .shift-cell {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .shift-slot {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+
+        .shift-slot:hover {
+            transform: translateX(2px);
+        }
+
+        .shift-slot.early {
+            background: var(--warning-light);
+            color: var(--warning-dark);
+            border: 2px solid var(--warning);
+        }
+
+        .shift-slot.late {
+            background: var(--info-light);
+            color: var(--info-dark);
+            border: 2px solid var(--info);
+        }
+
+        .shift-slot .material-icons {
+            font-size: 1.125rem;
+            opacity: 0.8;
+        }
+
+        .empty-slot {
+            padding: var(--space-lg);
+            text-align: center;
+            color: var(--gray-400);
+            font-style: italic;
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--gray-300);
+        }
+
+        /* ========================================
+           MODALS & OVERLAYS
+           ======================================== */
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 0;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            animation: modalFadeIn var(--transition-base) ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: var(--space-xl);
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: var(--space-xl);
+            overflow-y: auto;
+            max-height: calc(90vh - 160px);
+        }
+
+        .modal-footer {
+            padding: var(--space-lg) var(--space-xl);
+            border-top: 2px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .modal h4 {
+            color: var(--gray-900);
+            margin-bottom: var(--space-md);
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .leave-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 2px solid var(--gray-200);
+        }
+
+        .leave-item.period {
+            background: var(--info-light);
+            border-color: var(--info);
+        }
+
+        .leave-item.day {
+            background: var(--warning-light);
+            border-color: var(--warning);
+        }
+
+        .add-leave-form {
+            background: var(--gray-50);
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            border: 2px solid var(--gray-200);
+            margin-bottom: var(--space-md);
+        }
+
+        /* ========================================
+           NOTIFICATIONS & ALERTS
+           ======================================== */
+
+        .notification {
+            position: fixed;
+            top: var(--space-2xl);
+            right: var(--space-2xl);
+            padding: var(--space-lg) var(--space-xl);
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            z-index: 10000;
+            animation: slideIn var(--transition-slow) ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--error);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .notification .material-icons {
+            font-size: 1.5rem;
+        }
+
+        /* ========================================
+           EMPTY STATES
+           ======================================== */
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state .material-icons {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: var(--space-lg);
+        }
+
+        .empty-state p {
+            font-size: 1.125rem;
+            margin-top: var(--space-lg);
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: var(--space-lg);
+            }
+
+            .stats-row {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+
+            .staff-list {
+                grid-template-columns: 1fr;
+            }
+
+            .staff-item {
+                flex-direction: column;
+                gap: var(--space-lg);
+            }
+
+            .btn-remove {
+                position: absolute;
+                top: var(--space-md);
+                right: var(--space-md);
+            }
+
+            .roster-table-container {
+                overflow-x: auto;
+            }
+
+            .modal {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group .btn {
+                width: 100%;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+            }
+
+            .checkbox-label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="material-icons" style="font-size: 2rem;">phone_in_talk</span>
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                    <div>Phone Shift Roster Generator</div>
+                    <div style="font-size: 0.75rem; font-weight: 500; opacity: 0.7; letter-spacing: 0.5px;">V4: MAX 2 SHIFTS/WEEK + BUFFER DAYS + DETAILED LOGGING</div>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">group</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Staff</div>
+                        <div class="stat-value" id="stat-staff">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">calendar_today</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Weeks</div>
+                        <div class="stat-value" id="stat-weeks">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">schedule</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Shifts</div>
+                        <div class="stat-value" id="stat-shifts">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Period Selection -->
+        <div class="control-panel">
+            <h3>
+                <span class="material-icons">date_range</span>
+                Roster Period
+            </h3>
+            
+            <div class="control-row">
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">event</span>
+                        Select Month
+                    </label>
+                    <input type="month" id="period-month" class="form-input" onchange="updateMonthPeriod()">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">event</span>
+                        Start Date (First Monday)
+                    </label>
+                    <input type="date" id="period-start" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">event_available</span>
+                        Weeks in Period
+                    </label>
+                    <input type="number" id="period-weeks" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">event_note</span>
+                        End Date (Last Friday)
+                    </label>
+                    <input type="date" id="period-end" class="form-input" readonly>
+                </div>
+            </div>
+            
+            <div id="previous-periods" style="display: none; margin-top: var(--space-xl); padding-top: var(--space-xl); border-top: 2px solid var(--gray-200);">
+                <label style="font-weight: 600; font-size: 0.875rem; color: var(--gray-700); margin-bottom: var(--space-md); display: block;">
+                    <span class="material-icons" style="vertical-align: middle; font-size: 1.125rem; margin-right: var(--space-xs);">history</span>
+                    Previous Periods
+                </label>
+                <div id="previous-periods-list" style="display: flex; flex-wrap: wrap; gap: var(--space-md);"></div>
+            </div>
+        </div>
+
+        <!-- Staff Management -->
+        <div class="control-panel">
+            <h3>
+                <span class="material-icons">settings</span>
+                Staff Configuration
+            </h3>
+            
+            <div class="control-row">
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">person_add</span>
+                        Staff Name
+                    </label>
+                    <input type="text" id="staff-name" class="form-input" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">schedule</span>
+                        Schedule Type
+                    </label>
+                    <select id="schedule-type" class="form-select" onchange="toggleScheduleType()">
+                        <option value="fixed">Fixed Schedule (Same days every week)</option>
+                        <option value="alternating">Alternating Schedule (Week 1 / Week 2)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-row" id="fixed-schedule">
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">date_range</span>
+                        Work Days
+                    </label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="monday" class="work-day-checkbox"> Mon
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="tuesday" class="work-day-checkbox"> Tue
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="wednesday" class="work-day-checkbox"> Wed
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="thursday" class="work-day-checkbox"> Thu
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="friday" class="work-day-checkbox"> Fri
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-row" id="alternating-schedule" style="display: none;">
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">looks_one</span>
+                        Week 1 Work Days
+                    </label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="monday" class="week1-checkbox"> Mon
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="tuesday" class="week1-checkbox"> Tue
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="wednesday" class="week1-checkbox"> Wed
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="thursday" class="week1-checkbox"> Thu
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="friday" class="week1-checkbox"> Fri
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="material-icons">looks_two</span>
+                        Week 2 Work Days
+                    </label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="monday" class="week2-checkbox"> Mon
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="tuesday" class="week2-checkbox"> Tue
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="wednesday" class="week2-checkbox"> Wed
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="thursday" class="week2-checkbox"> Thu
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="friday" class="week2-checkbox"> Fri
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addStaff()">
+                    <span class="material-icons">person_add</span>
+                    Add Staff Member
+                </button>
+            </div>
+
+            <div class="staff-list" id="staff-list"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="control-panel">
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generateRoster()">
+                    <span class="material-icons">auto_awesome</span>
+                    Generate Roster
+                </button>
+                <button class="btn btn-secondary" onclick="exportRoster()">
+                    <span class="material-icons">download</span>
+                    Export to Excel
+                </button>
+                <button class="btn btn-secondary" onclick="exportStaff()" title="Export staff JSON">
+                    <span class="material-icons">file_download</span>
+                    Export Staff
+                </button>
+                <button class="btn btn-secondary" onclick="document.getElementById('staff-import-file').click()" title="Import staff JSON">
+                    <span class="material-icons">file_upload</span>
+                    Import Staff
+                </button>
+                <!-- Hidden file input used for importing staff JSON -->
+                <input id="staff-import-file" type="file" accept="application/json" style="display:none" onchange="handleStaffImportFile(event)">
+            </div>
+        </div>
+
+        <!-- Roster Display -->
+        <div class="roster-table-container">
+            <table class="roster-table" id="roster-table">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                    </tr>
+                </thead>
+                <tbody id="roster-tbody">
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <span class="material-icons">calendar_month</span>
+                            <p>Add staff and generate roster to get started</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Staff Edit Modal -->
+    <div id="staff-edit-modal" class="modal-overlay" style="display: none;" onclick="closeEditModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Manage Staff</h2>
+                <button onclick="closeEditModal()" class="icon-btn" style="color: white;">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-staff-id">
+                
+                <div class="form-group" style="margin-bottom: var(--space-xl);">
+                    <label>Staff Name</label>
+                    <input type="text" id="edit-staff-name" class="form-input" readonly>
+                </div>
+
+                <div class="form-group" style="margin-bottom: var(--space-xl);">
+                    <label>
+                        <span class="material-icons">assignment_ind</span>
+                        Status
+                    </label>
+                    <select id="edit-staff-status" class="form-select" onchange="toggleLeaveFields()">
+                        <option value="active">Active (Available for shifts)</option>
+                        <option value="leave">On Leave (Extended absence)</option>
+                        <option value="inactive">Inactive (Left organization)</option>
+                    </select>
+                </div>
+
+                <!-- Extended Leave Periods -->
+                <div id="leave-fields" style="display: none; margin-bottom: var(--space-xl);">
+                    <h4>
+                        <span class="material-icons">beach_access</span>
+                        Extended Leave Periods
+                    </h4>
+                    
+                    <div class="add-leave-form">
+                        <div class="control-row" style="margin-bottom: 0;">
+                            <div class="form-group">
+                                <label>Start Date</label>
+                                <input type="date" id="new-period-start" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>End Date</label>
+                                <input type="date" id="new-period-end" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: var(--space-md);">
+                            <label>Reason (Optional)</label>
+                            <input type="text" id="new-period-reason" class="form-input" placeholder="e.g., Maternity leave, Sabbatical">
+                        </div>
+                        <button onclick="addLeavePeriod()" class="btn btn-primary" style="margin-top: var(--space-md); width: 100%;">
+                            <span class="material-icons">add</span>
+                            Add Period
+                        </button>
+                    </div>
+                    
+                    <div id="leave-periods-list" style="display: flex; flex-direction: column; gap: var(--space-sm);"></div>
+                    <p style="color: var(--gray-500); font-size: 0.8125rem; margin-top: var(--space-sm);">
+                        Add date ranges for extended absences (e.g., maternity leave, sabbaticals, long vacations)
+                    </p>
+                </div>
+
+                <!-- Individual Leave Days -->
+                <div style="margin-bottom: var(--space-xl);">
+                    <h4>
+                        <span class="material-icons">event_busy</span>
+                        Individual Leave Days
+                    </h4>
+                    
+                    <div class="add-leave-form">
+                        <div class="control-row" style="margin-bottom: 0;">
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="new-leave-day-date" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Reason (Optional)</label>
+                                <input type="text" id="new-leave-day-reason" class="form-input" placeholder="e.g., Doctor's appointment">
+                            </div>
+                        </div>
+                        <button onclick="addLeaveDay()" class="btn btn-primary" style="margin-top: var(--space-md); width: 100%;">
+                            <span class="material-icons">add</span>
+                            Add Day
+                        </button>
+                    </div>
+                    
+                    <div id="leave-days-list" style="display: flex; flex-direction: column; gap: var(--space-sm);"></div>
+                    <p style="color: var(--gray-500); font-size: 0.8125rem; margin-top: var(--space-sm);">
+                        Add specific dates when this person will be unavailable (e.g., sick days, appointments, single-day absences)
+                    </p>
+                </div>
+
+                <!-- Inactive Fields -->
+                <div id="inactive-fields" style="display: none; margin-bottom: var(--space-xl);">
+                    <h4>
+                        <span class="material-icons">person_off</span>
+                        Departure Details
+                    </h4>
+                    <div class="form-group">
+                        <label>Last Working Day</label>
+                        <input type="date" id="edit-inactive-date" class="form-input">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group" style="width: 100%;">
+                    <button class="btn btn-secondary" onclick="closeEditModal()" style="flex: 1;">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary" onclick="saveStaffEdit()" style="flex: 1;">
+                        <span class="material-icons">save</span>
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Period View Modal -->
+    <div id="period-view-modal" class="modal-overlay" style="display: none;" onclick="closePeriodViewModal()">
+        <div class="modal" onclick="event.stopPropagation()" style="max-width: 90vw; width: 1200px;">
+            <div class="modal-header">
+                <h2 id="period-view-title">Historical Period</h2>
+                <button onclick="closePeriodViewModal()" class="icon-btn" style="color: white;">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="period-view-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePeriodViewModal()" style="width: 100%;">
+                    <span class="material-icons">close</span>
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===== PHONE SHIFT ROSTER - JAVASCRIPT (WITH LOGIC FIXES) =====
+
+// State
+let staff = [];
+let roster = {};
+let rosterPeriods = []; // Track historical periods for fairness
+let currentPeriod = null; // { startDate, endDate, weeks, roster }
+let lastPeriodConfig = null; // Track period configuration
+let currentWeekMetadata = {}; // Tracks calendar mapping for the active roster
+
+// Constants
+const WORK_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']; // Normal work week Mon-Fri
+const SHIFTS = ['early', 'late'];
+const DAY_NAMES = {
+    monday: 'Mon',
+    tuesday: 'Tue',
+    wednesday: 'Wed', 
+    thursday: 'Thu',
+    friday: 'Fri'
+};
+const GLOBAL_WEEK_ONE_START = '2025-11-03'; // First Monday of November 2025 anchors global week numbering
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    validateAndFixStartDate(); // Validate start date after loading state
+    renderStaffList();
+    updateStats();
+    setDefaultPeriod();
+    renderPreviousPeriods();
+});
+
+// Validate and fix start date if it's not a Monday
+function validateAndFixStartDate() {
+    const startDateInput = document.getElementById('period-start');
+    if (!startDateInput.value) return;
+    
+    const startDate = new Date(startDateInput.value + 'T00:00:00');
+    const dayOfWeek = startDate.getDay();
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const actualDay = dayNames[dayOfWeek];
+    
+    console.log(`🔍 Validating start date: ${startDateInput.value} is a ${actualDay}`);
+    
+    // If start date is not a Monday, clear it so setDefaultPeriod will fix it
+    if (dayOfWeek !== 1) {
+        console.warn(`⚠️ Invalid start date detected! ${startDateInput.value} is a ${actualDay}, not a Monday.`);
+        console.warn(`⚠️ Clearing roster and resetting to current month...`);
+        
+        startDateInput.value = '';
+        document.getElementById('period-end').value = '';
+        
+        // Clear the roster too since it was based on wrong dates
+    roster = {};
+    currentPeriod = null;
+    currentWeekMetadata = {};
+    renderRoster();
+        
+        showNotification(`Detected invalid start date (${actualDay}). Reset to current month. Please select your desired month again.`, 'warning');
+    } else {
+        console.log(`✓ Start date is valid (Monday)`);
+    }
+}
+
+// Set default period (current month)
+function setDefaultPeriod() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    
+    document.getElementById('period-month').value = `${year}-${month}`;
+    updateMonthPeriod();
+}
+
+// Update period based on selected month
+function updateMonthPeriod() {
+    const monthInput = document.getElementById('period-month');
+    if (!monthInput.value) return;
+    
+    const [year, month] = monthInput.value.split('-');
+    const monthDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+    
+    // Find first Monday of the month
+    const firstMonday = getFirstMonday(monthDate);
+    
+    // Count all Monday-Friday weeks that include days from this month
+    let weeks = 0;
+    let currentMonday = new Date(firstMonday);
+    const selectedMonth = monthDate.getMonth();
+    
+    // Keep counting weeks while Monday is in the selected month
+    while (currentMonday.getMonth() === selectedMonth) {
+        weeks++;
+        currentMonday.setDate(currentMonday.getDate() + 7);
+    }
+    
+    // Set the values (using timezone-safe formatting)
+    const startDateStr = formatDateLocal(firstMonday);
+    
+    console.log(`   Setting start date input to: ${startDateStr}`);
+    
+    document.getElementById('period-start').value = startDateStr;
+    document.getElementById('period-weeks').value = weeks;
+    updatePeriodEnd();
+    
+    // LOGIC FIX #2: Check if period configuration changed
+    checkPeriodChange();
+}
+
+// LOGIC FIX #2: Check if period configuration has changed
+function checkPeriodChange() {
+    const startDate = document.getElementById('period-start').value;
+    const weeks = parseInt(document.getElementById('period-weeks').value);
+    
+    const newConfig = `${startDate}-${weeks}`;
+    
+    // If configuration changed and there's an active roster, warn user
+    if (lastPeriodConfig && lastPeriodConfig !== newConfig && Object.keys(roster).length > 0) {
+        if (confirm('Period dates have changed. The current roster is for different dates.\n\nWould you like to clear the current roster and generate a new one?')) {
+            roster = {};
+            currentPeriod = null;
+            currentWeekMetadata = {};
+            renderRoster();
+            saveState();
+        }
+    }
+    
+    lastPeriodConfig = newConfig;
+}
+
+// Get first Monday of a month
+function getFirstMonday(date) {
+    const result = new Date(date.getFullYear(), date.getMonth(), 1);
+    const dayOfWeek = result.getDay(); // 0 = Sunday, 1 = Monday, 2 = Tuesday, etc.
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    console.log(`📅 Finding first Monday for ${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`);
+    console.log(`   First day of month: ${formatDateLocal(result)} is a ${dayNames[dayOfWeek]}`);
+    
+    // Calculate days to add to get to Monday
+    let daysToAdd;
+    if (dayOfWeek === 1) {
+        // Already Monday
+        daysToAdd = 0;
+    } else if (dayOfWeek === 0) {
+        // Sunday - add 1 day to get to Monday
+        daysToAdd = 1;
+    } else {
+        // Tuesday through Saturday - add days to get to next Monday
+        // Tuesday (2) needs 6 days, Wednesday (3) needs 5 days, etc.
+        daysToAdd = (8 - dayOfWeek);
+    }
+    
+    console.log(`   Adding ${daysToAdd} days to get to Monday`);
+    result.setDate(result.getDate() + daysToAdd);
+    console.log(`   First Monday: ${formatDateLocal(result)} (${dayNames[result.getDay()]})`);
+    
+    return result;
+}
+
+// Helper function to format date as YYYY-MM-DD in local timezone (timezone-safe)
+function formatDateLocal(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function getWeekStartDate(periodStartISO, weekIndex) {
+    const weekStart = new Date(periodStartISO + 'T00:00:00');
+    weekStart.setDate(weekStart.getDate() + (weekIndex - 1) * 7);
+    return weekStart;
+}
+
+function getWeekEndDate(weekStartDate) {
+    const end = new Date(weekStartDate);
+    end.setDate(end.getDate() + 4); // Monday → Friday window
+    return end;
+}
+
+function getGlobalWeekNumberFromDate(weekStartDate) {
+    const anchor = new Date(GLOBAL_WEEK_ONE_START + 'T00:00:00');
+    const diffDays = Math.floor((weekStartDate - anchor) / 86400000);
+    if (diffDays < 0) return 0;
+    return Math.floor(diffDays / 7) + 1;
+}
+
+function formatWeekRangeLabel(weekStartDate) {
+    const endDate = getWeekEndDate(weekStartDate);
+    const startLabel = weekStartDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+    const endLabel = endDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+    return `${startLabel} – ${endLabel}`;
+}
+
+function buildWeekMetadata(weekIndex, periodStartISO) {
+    const weekStartDate = getWeekStartDate(periodStartISO, weekIndex);
+    const weekEndDate = getWeekEndDate(weekStartDate);
+    return {
+        startDate: formatDateLocal(weekStartDate),
+        endDate: formatDateLocal(weekEndDate),
+        rangeLabel: formatWeekRangeLabel(weekStartDate),
+        globalWeek: getGlobalWeekNumberFromDate(weekStartDate)
+    };
+}
+
+// Update period end date based on start date and weeks
+function updatePeriodEnd() {
+    const startInput = document.getElementById('period-start');
+    const weeksInput = document.getElementById('period-weeks');
+    const endInput = document.getElementById('period-end');
+    
+    if (!startInput.value || !weeksInput.value) return;
+    
+    const startDate = new Date(startInput.value + 'T00:00:00');
+    const weeks = parseInt(weeksInput.value);
+    
+    // Calculate end date (Friday of the last week)
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + (weeks * 7) - 3); // -3 because week ends on Friday (Mon=0, Fri=4)
+    
+    endInput.value = formatDateLocal(endDate);
+    
+    // Update stats
+    document.getElementById('stat-weeks').textContent = weeks;
+    document.getElementById('stat-shifts').textContent = weeks * 2 * WORK_DAYS.length; // 2 shifts per day
+}
+
+// Get cumulative staff stats from all previous periods
+function getCumulativeStats() {
+    const cumulativeStats = {};
+    
+    // Initialize stats for all current staff
+    staff.forEach(s => {
+        cumulativeStats[s.id] = {
+            name: s.name,
+            earlyCount: 0,
+            lateCount: 0,
+            totalShifts: 0,
+            assignedDays: {}
+        };
+    });
+    
+    // Add up stats from all previous periods
+    rosterPeriods.forEach(period => {
+        if (period.roster) {
+            Object.keys(period.roster).forEach(week => {
+                WORK_DAYS.forEach(day => {
+                    const shifts = period.roster[week][day];
+                    if (shifts) {
+                        // Count early shifts
+                        [0, 1].forEach(i => {
+                            const staffId = shifts.early?.[i];
+                            if (staffId && cumulativeStats[staffId]) {
+                                cumulativeStats[staffId].earlyCount++;
+                                cumulativeStats[staffId].totalShifts++;
+                            }
+                        });
+                        
+                        // Count late shifts
+                        [0, 1].forEach(i => {
+                            const staffId = shifts.late?.[i];
+                            if (staffId && cumulativeStats[staffId]) {
+                                cumulativeStats[staffId].lateCount++;
+                                cumulativeStats[staffId].totalShifts++;
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    });
+    
+    return cumulativeStats;
+}
+
+// Render previous periods
+function renderPreviousPeriods() {
+    const container = document.getElementById('previous-periods');
+    const list = document.getElementById('previous-periods-list');
+    
+    if (rosterPeriods.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    container.style.display = 'block';
+    list.innerHTML = rosterPeriods.map((period, index) => {
+        const startDate = new Date(period.startDate);
+        const endDate = new Date(period.endDate);
+        return `
+            <span class="period-badge">
+                <span class="material-icons" style="font-size: 1rem;">history</span>
+                ${startDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })} - 
+                ${endDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
+                (${period.weeks}w)
+                <button onclick="viewPeriod(${index})" class="icon-btn" title="View Roster" style="padding: 0.125rem;">
+                    <span class="material-icons" style="font-size: 1rem;">visibility</span>
+                </button>
+                <button onclick="deletePeriod(${index})" class="icon-btn delete" title="Delete Period" style="padding: 0.125rem;">
+                    <span class="material-icons" style="font-size: 1rem;">delete</span>
+                </button>
+            </span>
+        `;
+    }).join('');
+}
+
+// LOGIC FIX #3: View a previous period's roster (improved to use snapshot data)
+function viewPeriod(index) {
+    const period = rosterPeriods[index];
+    if (!period) return;
+    
+    const modal = document.getElementById('period-view-modal');
+    const title = document.getElementById('period-view-title');
+    const content = document.getElementById('period-view-content');
+    
+    const startDate = new Date(period.startDate);
+    const endDate = new Date(period.endDate);
+    
+    title.textContent = `${startDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })} (${period.weeks} weeks)`;
+    
+    // Build the roster table HTML
+    let html = '<div style="overflow-x: auto;"><table class="roster-table" style="width: 100%; min-width: 600px;">';
+    
+    // Header
+    html += '<thead><tr><th style="width: 80px;">Week</th>';
+    WORK_DAYS.forEach(day => {
+        html += `<th style="text-transform: capitalize;">${day}</th>`;
+    });
+    html += '</tr></thead><tbody>';
+    
+    // Rows
+    for (let week = 1; week <= period.weeks; week++) {
+        const meta = (period.weekMetadata || {})[week] || buildWeekMetadata(week, period.startDate);
+        const calendarWeekLabel = meta.globalWeek >= 1 ? `Calendar Week ${meta.globalWeek}` : '';
+        const headerLabel = calendarWeekLabel ? `Week ${week} – ${calendarWeekLabel}` : `Week ${week}`;
+        html += `<tr><td class="week-cell">${headerLabel}<div style="font-size: 0.75rem; color: var(--gray-600);">${meta.rangeLabel}</div></td>`;
+        
+        WORK_DAYS.forEach(day => {
+            const dayData = period.roster[week][day];
+            
+            // LOGIC FIX #3: Use snapshot names from period.staffSnapshot if available
+            const getStaffName = (staffId) => {
+                if (period.staffSnapshot && period.staffSnapshot[staffId]) {
+                    return period.staffSnapshot[staffId].name;
+                }
+                // Fallback to current staff list
+                const staffMember = staff.find(s => s.id === staffId);
+                return staffMember ? staffMember.name : 'Unknown';
+            };
+            
+            const earlyStaff = dayData.early.map(id => getStaffName(id)).filter(n => n !== 'Unknown');
+            const lateStaff = dayData.late.map(id => getStaffName(id)).filter(n => n !== 'Unknown');
+            
+            html += '<td class="day-cell"><div class="shift-cell">';
+            if (earlyStaff.length > 0) {
+                html += `<div class="shift-slot early"><span class="material-icons">wb_sunny</span><div>${earlyStaff.join('<br>')}</div></div>`;
+            }
+            if (lateStaff.length > 0) {
+                html += `<div class="shift-slot late"><span class="material-icons">nights_stay</span><div>${lateStaff.join('<br>')}</div></div>`;
+            }
+            if (earlyStaff.length === 0 && lateStaff.length === 0) {
+                html += '<span style="color: var(--gray-400); font-style: italic;">No shifts</span>';
+            }
+            html += '</div></td>';
+        });
+        
+        html += '</tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    
+    // Add statistics
+    html += '<div style="margin-top: var(--space-2xl); padding-top: var(--space-xl); border-top: 2px solid var(--gray-200);">';
+    html += '<h4 style="margin-bottom: var(--space-lg); color: var(--gray-900); font-size: 1.125rem;">Period Statistics</h4>';
+    html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-md);">';
+    
+    if (period.stats && typeof period.stats === 'object') {
+        Object.entries(period.stats).forEach(([staffId, stats]) => {
+            // Use snapshot name if available, otherwise try current staff
+            let staffName = stats.name; // Stats already contain names
+            
+            html += `
+                <div style="padding: var(--space-lg); background: var(--gray-50); border-radius: var(--radius-md); border: 2px solid var(--gray-200);">
+                    <div style="font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-sm); font-size: 0.9375rem;">${staffName}</div>
+                    <div style="font-size: 0.875rem; color: var(--gray-600); display: flex; flex-direction: column; gap: var(--space-xs);">
+                        <div>Early: ${stats.earlyCount} | Late: ${stats.lateCount}</div>
+                        <div style="font-weight: 600;">Total: ${stats.totalShifts} shifts</div>
+                        ${stats.weekOffNum && stats.weekOffShiftType ? 
+                            `<div style="color: var(--info-dark); background: var(--info-light); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); margin-top: var(--space-xs);">Week ${stats.weekOffNum} ${stats.weekOffShiftType} off</div>` : 
+                            stats.weekOff ? `<div style="color: var(--info-dark);">Week ${stats.weekOff} off</div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        html += '<p style="color: var(--gray-500); font-style: italic; text-align: center; padding: var(--space-2xl);">No statistics available for this period</p>';
+    }
+    
+    html += '</div></div>';
+    
+    content.innerHTML = html;
+    modal.style.display = 'flex';
+}
+
+// Delete a previous period
+function deletePeriod(index) {
+    const period = rosterPeriods[index];
+    if (!period) return;
+    
+    const startDate = new Date(period.startDate);
+    const endDate = new Date(period.endDate);
+    const dateStr = `${startDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    
+    if (confirm(`Are you sure you want to delete the period:\n${dateStr} (${period.weeks} weeks)?\n\nThis will completely remove it from history and all fairness calculations.`)) {
+        // Remove the period
+        rosterPeriods.splice(index, 1);
+        
+        // Clear week-off data for all staff (since it's period-specific)
+        staff.forEach(s => {
+            s.weekOffNum = null;
+            s.weekOffShiftType = null;
+        });
+        
+        // If this was the current period, clear it
+        if (currentPeriod && currentPeriod.startDate === period.startDate && currentPeriod.endDate === period.endDate) {
+            currentPeriod = null;
+            roster = {};
+            currentWeekMetadata = {};
+            renderRoster();
+        }
+        
+        saveState();
+        renderPreviousPeriods();
+        
+        showNotification('Period deleted successfully', 'success');
+        
+        // Ask if they want to regenerate current roster with updated fairness
+        if (Object.keys(roster).length > 0 && currentPeriod) {
+            setTimeout(() => {
+                if (confirm('Would you like to regenerate the current roster with updated fairness calculations?\n\n(Recommended if you want to account for the deletion)')) {
+                    generateRoster();
+                }
+            }, 500);
+        }
+    }
+}
+
+// Close period view modal
+function closePeriodViewModal() {
+    document.getElementById('period-view-modal').style.display = 'none';
+}
+
+// Toggle schedule type
+function toggleScheduleType() {
+    const scheduleType = document.getElementById('schedule-type').value;
+    const fixedDiv = document.getElementById('fixed-schedule');
+    const alternatingDiv = document.getElementById('alternating-schedule');
+    
+    if (scheduleType === 'alternating') {
+        fixedDiv.style.display = 'none';
+        alternatingDiv.style.display = 'grid';
+    } else {
+        fixedDiv.style.display = 'grid';
+        alternatingDiv.style.display = 'none';
+    }
+}
+
+// Add staff member
+function addStaff() {
+    const nameInput = document.getElementById('staff-name');
+    const scheduleType = document.getElementById('schedule-type').value;
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        showNotification('Please enter a staff name', 'warning');
+        return;
+    }
+    
+    // Get work days based on schedule type
+    let workDays = [];
+    let week1Days = [];
+    let week2Days = [];
+    
+    if (scheduleType === 'alternating') {
+        // Get week1 days
+        document.querySelectorAll('.week1-checkbox:checked').forEach(cb => {
+            week1Days.push(cb.value);
+        });
+        
+        // Get week2 days
+        document.querySelectorAll('.week2-checkbox:checked').forEach(cb => {
+            week2Days.push(cb.value);
+        });
+        
+        // LOGIC FIX #5: Better validation for alternating schedules
+        if (week1Days.length === 0 && week2Days.length === 0) {
+            showNotification('Please select at least one work day in Week 1 or Week 2', 'warning');
+            return;
+        }
+        
+        // Warn if only one week has days selected
+        if (week1Days.length === 0 || week2Days.length === 0) {
+            if (!confirm('You have selected work days for only one week. This means the staff member will only work every other week. Is this correct?')) {
+                return;
+            }
+        }
+    } else {
+        // Get fixed schedule days
+        const workDayCheckboxes = document.querySelectorAll('.work-day-checkbox:checked');
+        workDays = Array.from(workDayCheckboxes).map(cb => cb.value);
+        
+        if (workDays.length === 0) {
+            showNotification('Please select at least one work day', 'warning');
+            return;
+        }
+    }
+    
+    const staffMember = {
+        id: generateId(),
+        name: name,
+        scheduleType: scheduleType,
+        workDays: workDays, // For fixed schedules
+        week1Days: week1Days, // For alternating schedules
+        week2Days: week2Days, // For alternating schedules
+        weekOff: null, // Will be auto-assigned
+        status: 'active', // active, leave, inactive
+        leavePeriods: [], // Array of {start, end, reason}
+        leaveDays: [], // Array of {date, reason}
+        inactiveDate: null
+    };
+
+    staff.push(staffMember);
+
+    // Clear form
+    nameInput.value = '';
+    document.querySelectorAll('.work-day-checkbox').forEach(cb => cb.checked = false);
+    document.querySelectorAll('.week1-checkbox').forEach(cb => cb.checked = false);
+    document.querySelectorAll('.week2-checkbox').forEach(cb => cb.checked = false);
+    document.getElementById('schedule-type').value = 'fixed';
+    toggleScheduleType();
+
+    saveState();
+    renderStaffList();
+    updateStats();
+    showNotification(`Added ${name}`, 'success');
+}
+
+// LOGIC FIX #1: Remove staff member with roster check
+function removeStaff(id) {
+    const member = staff.find(s => s.id === id);
+    if (!member) return;
+    
+    // Check if staff member is in current roster
+    let isInRoster = false;
+    if (Object.keys(roster).length > 0) {
+        for (let week in roster) {
+            for (let day of WORK_DAYS) {
+                const shifts = roster[week][day];
+                if (shifts.early.includes(id) || shifts.late.includes(id)) {
+                    isInRoster = true;
+                    break;
+                }
+            }
+            if (isInRoster) break;
+        }
+    }
+    
+    // Warn if removing someone from active roster
+    let confirmMessage = `Remove ${member.name} from the roster?`;
+    if (isInRoster) {
+        confirmMessage = `⚠️ ${member.name} is currently assigned to shifts in the active roster.\n\nRemoving them will leave gaps in the schedule.\n\nDo you want to:\n• Remove and regenerate roster (Recommended)\n• Remove without regenerating\n• Cancel`;
+        
+        const result = confirm(confirmMessage + '\n\nClick OK to remove and regenerate, Cancel to abort.');
+        if (!result) return;
+        
+        // Remove the staff member
+        staff = staff.filter(s => s.id !== id);
+        saveState();
+        renderStaffList();
+        updateStats();
+        
+        // Regenerate roster
+        if (confirm('Staff member removed. Regenerate roster now?')) {
+            generateRoster();
+        } else {
+            // Clear roster to avoid confusion
+            roster = {};
+            currentPeriod = null;
+            currentWeekMetadata = {};
+            renderRoster();
+            saveState();
+            showNotification('Staff member removed. Roster cleared - please regenerate.', 'warning');
+        }
+    } else {
+        if (confirm(confirmMessage)) {
+            staff = staff.filter(s => s.id !== id);
+            saveState();
+            renderStaffList();
+            updateStats();
+            showNotification('Staff member removed', 'success');
+        }
+    }
+}
+
+// Render staff list
+function renderStaffList() {
+    const listDiv = document.getElementById('staff-list');
+    
+    if (staff.length === 0) {
+        listDiv.innerHTML = '<div class="empty-state" style="padding: var(--space-2xl);"><p style="color: var(--gray-500);">No staff added yet</p></div>';
+        updateStats();
+        return;
+    }
+
+    listDiv.innerHTML = staff.map(s => {
+        // Get status badge
+        let statusIcon = 'check_circle';
+        let statusClass = 'active';
+        let statusText = 'Active';
+        
+        if (s.status === 'leave') {
+            statusIcon = 'beach_access';
+            statusClass = 'leave';
+            statusText = 'On Leave';
+        } else if (s.status === 'inactive') {
+            statusIcon = 'person_off';
+            statusClass = 'inactive';
+            statusText = 'Inactive';
+            if (s.inactiveDate) {
+                const date = new Date(s.inactiveDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+                statusText += ` (${date})`;
+            }
+        }
+        
+        // Get schedule badge
+        let scheduleBadge = '';
+        if (s.scheduleType === 'alternating') {
+            scheduleBadge = '<span class="schedule-badge alternating">Alternating</span>';
+        } else {
+            scheduleBadge = '<span class="schedule-badge">Fixed</span>';
+        }
+        
+        // Get work days display
+        let workDaysHtml = '';
+        if (s.scheduleType === 'alternating') {
+            // Sort days in Monday-Friday order
+            const sortDays = (days) => {
+                return days.sort((a, b) => WORK_DAYS.indexOf(a) - WORK_DAYS.indexOf(b));
+            };
+            const week1 = sortDays([...(s.week1Days || [])]).map(day => `<span class="day-badge">${day.substring(0, 3)}</span>`).join('');
+            const week2 = sortDays([...(s.week2Days || [])]).map(day => `<span class="day-badge">${day.substring(0, 3)}</span>`).join('');
+            workDaysHtml = `
+                <div class="staff-work-section">
+                    <div class="staff-section-label">Work Days</div>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+                        <div style="display: flex; flex-wrap: wrap; gap: var(--space-xs); align-items: center;">
+                            <span style="font-size: 0.75rem; color: var(--gray-600); font-weight: 600; min-width: 30px;">W1:</span>
+                            ${week1 || '<span style="color: var(--gray-400); font-size: 0.75rem;">None</span>'}
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: var(--space-xs); align-items: center;">
+                            <span style="font-size: 0.75rem; color: var(--gray-600); font-weight: 600; min-width: 30px;">W2:</span>
+                            ${week2 || '<span style="color: var(--gray-400); font-size: 0.75rem;">None</span>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Sort days in Monday-Friday order
+            const sortedDays = [...(s.workDays || [])].sort((a, b) => WORK_DAYS.indexOf(a) - WORK_DAYS.indexOf(b));
+            const days = sortedDays.map(day => `<span class="day-badge">${day.substring(0, 3)}</span>`).join('');
+            workDaysHtml = `
+                <div class="staff-work-section">
+                    <div class="staff-section-label">Work Days</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: var(--space-xs);">
+                        ${days || '<span style="color: var(--gray-400); font-size: 0.75rem;">No days set</span>'}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Show week off badge (shift-specific)
+        let weekOffBadge = '';
+        if (s.weekOffNum && s.weekOffShiftType) {
+            const shiftLabel = s.weekOffShiftType.charAt(0).toUpperCase() + s.weekOffShiftType.slice(1);
+            weekOffBadge = `<span class="week-off-badge"><span class="material-icons" style="font-size: 0.875rem;">event_busy</span>Week ${s.weekOffNum} ${shiftLabel} Off</span>`;
+        } else if (s.weekOff) {
+            // Backward compatibility for old full-week off
+            weekOffBadge = `<span class="week-off-badge"><span class="material-icons" style="font-size: 0.875rem;">event_busy</span>Week ${s.weekOff} Off</span>`;
+        } else {
+            weekOffBadge = '<span style="color: var(--gray-500); font-size: 0.8125rem; font-style: italic;">Auto-assigned</span>';
+        }
+        
+        // Show individual leave days count
+        let leaveDaysInfo = '';
+        if (s.leaveDays && s.leaveDays.length > 0) {
+            leaveDaysInfo = `
+                <span class="leave-info-badge days">
+                    <span class="material-icons" style="font-size: 0.875rem;">event_busy</span>
+                    ${s.leaveDays.length} day${s.leaveDays.length > 1 ? 's' : ''}
+                </span>
+            `;
+        }
+        
+        // Show leave periods count
+        let leavePeriodsInfo = '';
+        if (s.leavePeriods && s.leavePeriods.length > 0) {
+            leavePeriodsInfo = `
+                <span class="leave-info-badge periods">
+                    <span class="material-icons" style="font-size: 0.875rem;">beach_access</span>
+                    ${s.leavePeriods.length} period${s.leavePeriods.length > 1 ? 's' : ''}
+                </span>
+            `;
+        }
+        
+        return `
+            <div class="staff-item" onclick="editStaff('${s.id}')" style="opacity: ${s.status === 'inactive' ? '0.6' : '1'};">
+                <div class="staff-info">
+                    <div class="staff-name">${s.name}</div>
+                    <div class="staff-meta">
+                        <span class="status-badge status-${statusClass}">
+                            <span class="material-icons" style="font-size: 0.875rem;">${statusIcon}</span>
+                            ${statusText}
+                        </span>
+                        ${scheduleBadge}
+                        ${leaveDaysInfo}
+                        ${leavePeriodsInfo}
+                    </div>
+                    ${workDaysHtml}
+                    <div class="staff-work-section">
+                        <div class="staff-section-label">Week Off</div>
+                        ${weekOffBadge}
+                    </div>
+                </div>
+                <button class="btn-remove" onclick="event.stopPropagation(); removeStaff('${s.id}')" title="Remove ${s.name}">
+                    <span class="material-icons">delete</span>
+                </button>
+            </div>
+        `;
+    }).join('');
+    
+    updateStats();
+}
+
+// Get work days for a staff member on a specific week (handles alternating schedules)
+// 
+// ALTERNATING SCHEDULE EXAMPLE (Nathan):
+//   scheduleType: 'alternating'
+//   week1Days: ['wednesday', 'thursday', 'friday']  // Odd weeks (1, 3, 5...)
+//   week2Days: ['monday', 'tuesday']                // Even weeks (2, 4, 6...)
+// 
+// Result: Nathan works Wed/Thu/Fri on weeks 1&3, Mon/Tue on weeks 2&4
+//
+function getWorkDaysForWeek(staffMember, weekNumber) {
+    if (staffMember.scheduleType === 'alternating') {
+        // Odd weeks (1, 3, 5) use week1Days, even weeks (2, 4, 6) use week2Days
+        if (weekNumber % 2 === 1) {
+            return staffMember.week1Days || [];
+        } else {
+            return staffMember.week2Days || [];
+        }
+    } else {
+        // Fixed schedule
+        return staffMember.workDays || [];
+    }
+}
+
+// Get previous working day (handles week boundaries)
+function getPreviousDay(currentDay, currentWeek) {
+    const dayIndex = WORK_DAYS.indexOf(currentDay);
+    
+    if (dayIndex > 0) {
+        // Previous day is in same week
+        return {
+            day: WORK_DAYS[dayIndex - 1],
+            week: currentWeek
+        };
+    } else if (currentWeek > 1) {
+        // Previous day is last day of previous week (Friday)
+        return {
+            day: WORK_DAYS[WORK_DAYS.length - 1], // friday
+            week: currentWeek - 1
+        };
+    }
+    
+    return null; // No previous day (first day of first week)
+}
+
+// Check if staff member had this shift type yesterday
+function hadShiftYesterday(staffId, shiftType, currentDay, currentWeek) {
+    const prev = getPreviousDay(currentDay, currentWeek);
+    if (!prev) return false;
+    
+    const yesterdayShifts = roster[prev.week]?.[prev.day]?.[shiftType];
+    if (!yesterdayShifts) return false;
+    
+    return yesterdayShifts.includes(staffId);
+}
+
+// Check if staff member worked ANY shift yesterday (early or late)
+function workedYesterday(staffId, currentDay, currentWeek) {
+    const prev = getPreviousDay(currentDay, currentWeek);
+    if (!prev) return false;
+    
+    const yesterdayEarly = roster[prev.week]?.[prev.day]?.early || [];
+    const yesterdayLate = roster[prev.week]?.[prev.day]?.late || [];
+    
+    return yesterdayEarly.includes(staffId) || yesterdayLate.includes(staffId);
+}
+
+// ============================================================================
+// ACCURATE AVAILABILITY HELPERS
+// ============================================================================
+// These functions provide granular, day-by-day, shift-by-shift availability
+// checking to ensure fair quota calculation that accounts for:
+// - Rostered work days (fixed or alternating)
+// - Leave periods
+// - Individual leave days  
+// - Week-off assignments (shift-specific)
+// - Staff status (inactive)
+// ============================================================================
+
+/** 
+ * Check if a staff member is available for a specific day/shift combination
+ * This is the BASE availability (before consecutive day constraints)
+ */
+function isBaseAvailable(s, week, day, shiftType, dateISO, periodStartISO) {
+    // Check if they work this day according to their schedule
+    const worksThisDay = getWorkDaysForWeek(s, week).includes(day);
+    if (!worksThisDay) return false;
+    
+    // Check if inactive
+    if (s.status === 'inactive') return false;
+    
+    // Check leave periods
+    const d = new Date(dateISO + 'T00:00:00');
+    for (const p of s.leavePeriods || []) {
+        if (p.start && p.end) {
+            const ps = new Date(p.start + 'T00:00:00');
+            const pe = new Date(p.end + 'T23:59:59');
+            if (d >= ps && d <= pe) return false;
+        }
+    }
+    
+    // Check individual leave days
+    if ((s.leaveDays || []).some(ld => ld.date === dateISO)) return false;
+    
+    // Check week-off for THIS SPECIFIC SHIFT TYPE
+    if (s.weekOffNum && s.weekOffShiftType) {
+        const periodStart = new Date(periodStartISO + 'T00:00:00');
+        const dayDate = new Date(dateISO + 'T00:00:00');
+        const diffDays = Math.floor((dayDate - periodStart) / 86400000);
+        const weekIndex = Math.floor(diffDays / 7) + 1;
+        if (weekIndex === s.weekOffNum && s.weekOffShiftType === shiftType) return false;
+    }
+    
+    return true;
+}
+
+/**
+ * Helper to convert week/day to ISO date string (timezone-safe)
+ */
+function dateFor(week, day, periodStartISO) {
+    const dayIndex = WORK_DAYS.indexOf(day);
+    const offsetDays = (week - 1) * 7 + dayIndex;
+    const date = new Date(periodStartISO + 'T00:00:00');
+    date.setDate(date.getDate() + offsetDays);
+    return formatDateLocal(date);
+}
+
+/**
+ * Compute accurate availability map - counts EACH early/late opportunity
+ * This accounts for leave days, leave periods, and week-offs properly
+ */
+function computeAvailabilityMap(activeStaff, weeks, periodStartISO) {
+    const avail = {};
+    activeStaff.forEach(s => { 
+        avail[s.id] = { early: 0, late: 0, total: 0 }; 
+    });
+    
+    const SHIFTS = ['early', 'late'];
+    
+    for (let w = 1; w <= weeks; w++) {
+        for (const day of WORK_DAYS) {
+            const dateISO = dateFor(w, day, periodStartISO);
+            for (const shiftType of SHIFTS) {
+                for (const s of activeStaff) {
+                    if (isBaseAvailable(s, w, day, shiftType, dateISO, periodStartISO)) {
+                        if (shiftType === 'early') avail[s.id].early++;
+                        else avail[s.id].late++;
+                        avail[s.id].total++;
+                    }
+                }
+            }
+        }
+    }
+    
+    return avail;
+}
+
+/**
+ * Compute equal shift targets for all staff
+ * This ensures PT/FT are treated equally - everyone gets the same number of shifts
+ * regardless of their work schedule (part-time vs full-time)
+ */
+function computeProportionalTargets(activeStaff, availability, requiredEarly, requiredLate) {
+    // EQUAL DISTRIBUTION: All staff get the same number of shifts
+    // Part-time and full-time staff work the same amount, just on their available days
+
+    const numStaff = activeStaff.length;
+    
+    // Guard against division by zero
+    const safe = (n) => (isFinite(n) && !isNaN(n)) ? n : 0;
+
+    // Equal split: everyone gets same target shifts
+    const targetEarlyPerPerson = safe(requiredEarly / numStaff);
+    const targetLatePerPerson = safe(requiredLate / numStaff);
+    const targetTotalPerPerson = targetEarlyPerPerson + targetLatePerPerson;
+
+    const targets = {};
+    for (const s of activeStaff) {
+        const a = availability[s.id] || { early: 0, late: 0, total: 0 };
+        targets[s.id] = {
+            targetEarly: targetEarlyPerPerson,
+            targetLate: targetLatePerPerson,
+            targetTotal: targetTotalPerPerson,
+            availEarly: a.early,
+            availLate: a.late,
+            availTotal: a.total
+        };
+    }
+    return targets;
+}
+
+// ============================================================================
+// REDESIGNED FAIR ROSTER GENERATION ALGORITHM - V4
+// ============================================================================
+// Design Principles:
+// 1. True fairness: Everyone works equal number of shifts regardless of part-time status
+// 2. Part-time accommodation: Part-time staff work their shifts on their available days
+// 3. Balanced shifts: Everyone gets ~50/50 early and late shifts
+// 4. Smart week-offs: Only if excess capacity, rotated fairly across all periods
+// 5. Pattern optimization: Avoid consecutive opposite shifts when possible
+// 6. Transparency: Clear reporting of fairness metrics
+// 7. BUFFER DAY REQUIREMENT: No late→early or early→late on consecutive days (HARD CONSTRAINT)
+// 8. WEEKLY FAIRNESS PRIORITY: Max 2 shifts per person per week (penalty starts at 2)
+// ============================================================================
+
+// Helper function: Check if assigning this shift would create opposite shift flip
+function wouldCreateOppositeFlip(staffId, week, day, shift, currentAssignments) {
+    const dayIndex = WORK_DAYS.indexOf(day);
+    
+    // Check previous day in same week
+    if (dayIndex > 0) {
+        const prevDay = WORK_DAYS[dayIndex - 1];
+        const prevShifts = currentAssignments[week][prevDay];
+        const oppositeShift = shift === 'early' ? 'late' : 'early';
+        
+        if (prevShifts[oppositeShift].includes(staffId)) {
+            return true; // Would create late→early or early→late pattern
+        }
+    }
+    
+    // Check next day in same week
+    if (dayIndex < WORK_DAYS.length - 1) {
+        const nextDay = WORK_DAYS[dayIndex + 1];
+        const nextShifts = currentAssignments[week][nextDay];
+        const oppositeShift = shift === 'early' ? 'late' : 'early';
+        
+        if (nextShifts[oppositeShift].includes(staffId)) {
+            return true; // Would create pattern
+        }
+    }
+    
+    // Check across week boundary (Friday→Monday)
+    if (day === 'monday' && week > 1) {
+        const prevWeekFriday = currentAssignments[week - 1]['friday'];
+        const oppositeShift = shift === 'early' ? 'late' : 'early';
+        
+        if (prevWeekFriday[oppositeShift].includes(staffId)) {
+            return true; // Would create weekend flip
+        }
+    }
+    
+    if (day === 'friday' && week < Object.keys(currentAssignments).length) {
+        const nextWeekMonday = currentAssignments[week + 1]['monday'];
+        const oppositeShift = shift === 'early' ? 'late' : 'early';
+        
+        if (nextWeekMonday && nextWeekMonday[oppositeShift].includes(staffId)) {
+            return true; // Would create weekend flip
+        }
+    }
+    
+    return false;
+}
+
+function generateRoster() {
+    const activeStaff = staff.filter(s => s.status !== 'inactive');
+    
+    if (activeStaff.length === 0) {
+        showNotification('Please add active staff members first', 'warning');
+        return;
+    }
+
+    if (activeStaff.length < 4) {
+        showNotification('Need at least 4 active staff members (2 per early shift + 2 per late shift)', 'warning');
+        return;
+    }
+
+    const startDate = document.getElementById('period-start').value;
+    const weeks = parseInt(document.getElementById('period-weeks').value);
+    
+    if (!startDate) {
+        showNotification('Please select a start date', 'warning');
+        return;
+    }
+    
+    // CRITICAL VALIDATION: Start date must be a Monday for Monday-Friday weeks
+    const startDateObj = new Date(startDate + 'T00:00:00');
+    const dayOfWeek = startDateObj.getDay(); // 0 = Sunday, 1 = Monday, 2 = Tuesday, etc.
+    if (dayOfWeek !== 1) {
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const actualDay = dayNames[dayOfWeek];
+        const message = `❌ ERROR: Start date must be a Monday!\n\nThe selected start date (${startDate}) is a ${actualDay}.\n\nThe roster runs Monday to Friday each week, so the start date MUST be a Monday.\n\nPlease:\n• Select a month from the dropdown (it will auto-select the first Monday), OR\n• Manually choose a date that falls on a Monday`;
+        alert(message);
+        showNotification('Start date must be a Monday', 'error');
+        return;
+    }
+
+    console.log('='.repeat(70));
+    console.log('CONSTRAINT-BASED FAIR ROSTER ALGORITHM V6 - NO SCORING');
+    console.log('='.repeat(70));
+    console.log('');
+
+    // Get cumulative stats from previous periods for fairness
+    const cumulativeStats = getCumulativeStats();
+
+    // ========================================================================
+    // PHASE 1: ACCURATE AVAILABILITY ANALYSIS
+    // ========================================================================
+    console.log('Phase 1: Analyzing Staff Availability (Day-by-Day, Shift-by-Shift)');
+    console.log('-'.repeat(70));
+    
+    // Use the granular availability checker that accounts for:
+    // - Rostered work days (fixed or alternating)
+    // - Leave periods
+    // - Individual leave days
+    // - Week-off assignments (will be applied in Phase 2)
+    const staffAvailability = computeAvailabilityMap(activeStaff, weeks, startDate);
+    
+    // Calculate what's required this period
+    const requiredEarly = weeks * WORK_DAYS.length * 2; // 2 people per early shift
+    const requiredLate = weeks * WORK_DAYS.length * 2;  // 2 people per late shift
+    const totalShiftsNeeded = requiredEarly + requiredLate;
+    
+    // Calculate total availability BEFORE week-offs
+    const totalAvailability = Object.values(staffAvailability).reduce(
+        (sum, av) => sum + av.total, 0
+    );
+    const capacityRatio = totalAvailability / totalShiftsNeeded;
+    
+    console.log(`Total shifts needed: ${totalShiftsNeeded} (${requiredEarly} early + ${requiredLate} late)`);
+    console.log(`Total staff availability: ${totalAvailability} shift-slots`);
+    console.log(`Capacity ratio: ${(capacityRatio * 100).toFixed(1)}% (${capacityRatio >= 1.10 ? 'EXCESS - week-offs possible' : 'LIMITED - full utilization needed'})`);
+    console.log('');
+    console.log('Individual Availability (before week-offs):');
+    activeStaff.forEach(s => {
+        const av = staffAvailability[s.id];
+        console.log(`  ${s.name}: ${av.total} slots (${av.early} early, ${av.late} late)`);
+    });
+    console.log('');
+
+    // ========================================================================
+    // PHASE 2: FAIR WEEK-OFF ROTATION
+    // ========================================================================
+    console.log('Phase 2: Week-Off Assignment');
+    console.log('-'.repeat(70));
+    
+    // Initialize week-off tracking if not exists
+    if (!window.weekOffRotation) {
+        window.weekOffRotation = {};
+        activeStaff.forEach(s => {
+            weekOffRotation[s.id] = {
+                name: s.name,
+                totalWeekOffs: 0,
+                history: []
+            };
+        });
+    }
+    
+    // Add any new staff to tracking
+    activeStaff.forEach(s => {
+        if (!weekOffRotation[s.id]) {
+            weekOffRotation[s.id] = {
+                name: s.name,
+                totalWeekOffs: 0,
+                history: []
+            };
+        }
+    });
+    
+    // Determine if week-offs are feasible
+    // Temporarily disabled to prevent bias while we enforce strict per-week caps
+    const enableWeekOffs = false;
+    
+    if (enableWeekOffs) {
+        console.log('✓ Excess capacity detected - enabling fair week-off rotation');
+        
+        // Calculate who deserves week-offs (based on cumulative fairness)
+        const weekOffCandidates = activeStaff
+            .map(s => ({
+                staff: s,
+                weekOffsReceived: weekOffRotation[s.id].totalWeekOffs,
+                availability: staffAvailability[s.id].actualShifts
+            }))
+            .sort((a, b) => a.weekOffsReceived - b.weekOffsReceived); // Fewest week-offs first
+        
+        // Assign week-offs fairly
+        const maxWeekOffs = Math.min(weeks, Math.floor(activeStaff.length * 0.5)); // Up to 50% of staff
+        let weekOffCount = 0;
+        
+        for (let i = 0; i < Math.min(maxWeekOffs, weekOffCandidates.length); i++) {
+            const candidate = weekOffCandidates[i].staff;
+            const weekNum = (weekOffCount % weeks) + 1;
+            const shiftType = weekOffCount % 2 === 0 ? 'early' : 'late';
+            
+            candidate.weekOffNum = weekNum;
+            candidate.weekOffShiftType = shiftType;
+            
+            // Properly reduce availability for this specific shift type in that week
+            // Count how many shifts of this type they would have worked that week
+            let shiftsRemoved = 0;
+            const workDays = getWorkDaysForWeek(candidate, weekNum);
+            for (const day of workDays) {
+                const dateISO = dateFor(weekNum, day, startDate);
+                if (isBaseAvailable(candidate, weekNum, day, shiftType, dateISO, startDate)) {
+                    shiftsRemoved++;
+                }
+            }
+            
+            // Reduce their availability counts
+            if (shiftType === 'early') {
+                staffAvailability[candidate.id].early -= shiftsRemoved;
+            } else {
+                staffAvailability[candidate.id].late -= shiftsRemoved;
+            }
+            staffAvailability[candidate.id].total -= shiftsRemoved;
+            
+            // Track for future fairness
+            weekOffRotation[candidate.id].totalWeekOffs++;
+            weekOffRotation[candidate.id].history.push({
+                period: new Date().toISOString(),
+                week: weekNum,
+                shiftType: shiftType
+            });
+            
+            weekOffCount++;
+            console.log(`  → ${candidate.name}: Week ${weekNum} ${shiftType} off (removed ${shiftsRemoved} shifts, total week-offs: ${weekOffRotation[candidate.id].totalWeekOffs})`);
+        }
+        
+        // Clear week-off for those not selected
+        activeStaff.forEach(s => {
+            if (!s.weekOffNum) {
+                s.weekOffNum = null;
+                s.weekOffShiftType = null;
+            }
+        });
+        
+        console.log(`✓ Assigned ${weekOffCount} week-offs based on fair rotation`);
+    } else {
+        console.log('⚠️ Week-offs disabled for this run to avoid skewing fairness');
+        console.log('   Everyone eligible; strict weekly caps will manage load');
+        activeStaff.forEach(s => {
+            s.weekOffNum = null;
+            s.weekOffShiftType = null;
+        });
+    }
+    console.log('');
+    
+    // Recalculate total availability after week-offs
+    const totalAvailabilityAfterWeekOffs = Object.values(staffAvailability).reduce(
+        (sum, av) => sum + av.total, 0
+    );
+    
+    // ========================================================================
+    // PHASE 2.5: COMPUTE EQUAL TARGETS FOR ALL STAFF
+    // ========================================================================
+    console.log('Phase 2.5: Computing Equal Targets (same for all staff)');
+    console.log('-'.repeat(70));
+    
+    // Calculate fair targets - EQUAL for everyone regardless of work schedule
+    // Part-time staff get same number of shifts, just on their working days
+    const perPersonTargets = computeProportionalTargets(
+        activeStaff, 
+        staffAvailability, 
+        requiredEarly, 
+        requiredLate
+    );
+    
+    console.log('Fair Targets (equal distribution - all staff same target):');
+    activeStaff.forEach(s => {
+        const t = perPersonTargets[s.id];
+        let workDaysDisplay;
+        if (s.scheduleType === 'alternating') {
+            const week1Count = (s.week1Days || []).length;
+            const week2Count = (s.week2Days || []).length;
+            workDaysDisplay = `${week1Count}/${week2Count} days (alternating)`;
+        } else {
+            const workDays = s.workDays ? s.workDays.length : 5;
+            workDaysDisplay = `${workDays} work days/week`;
+        }
+        console.log(`  ${s.name}: ${t.targetTotal.toFixed(1)} total (${t.targetEarly.toFixed(1)} early, ${t.targetLate.toFixed(1)} late) - ${workDaysDisplay}`);
+    });
+    console.log('');
+    
+    // ========================================================================
+    // PHASE 3: SHIFT ASSIGNMENT
+    // ========================================================================
+    console.log('Phase 3: Assigning Shifts');
+    console.log('-'.repeat(70));
+
+    roster = {};
+    
+    // Initialize roster structure (2 people per shift)
+    for (let week = 1; week <= weeks; week++) {
+        roster[week] = {};
+        WORK_DAYS.forEach(day => {
+            roster[week][day] = {
+                early: [null, null], // 2 people for early shift
+                late: [null, null]   // 2 people for late shift
+            };
+        });
+    }
+
+    // Track assignments for fairness - initialize with cumulative stats
+    const staffStats = {};
+    staff.forEach(s => {
+        staffStats[s.id] = {
+            name: s.name,
+            earlyCount: cumulativeStats[s.id]?.earlyCount || 0,
+            lateCount: cumulativeStats[s.id]?.lateCount || 0,
+            totalShifts: cumulativeStats[s.id]?.totalShifts || 0,
+            assignedDays: cumulativeStats[s.id]?.assignedDays || {}
+        };
+    });
+
+    // Try to maintain consistent shift days for each person
+    const preferredEarlyDay = {};
+    const preferredLateDay = {};
+
+    currentWeekMetadata = {};
+    const weekMetadata = {};
+
+    // Generate assignments
+    for (let week = 1; week <= weeks; week++) {
+    const weekMeta = buildWeekMetadata(week, startDate);
+    const weekStartDate = new Date(weekMeta.startDate + 'T00:00:00');
+    const weekRangeLabel = weekMeta.rangeLabel;
+    const globalWeekNumber = weekMeta.globalWeek;
+
+    weekMetadata[week] = weekMeta;
+    currentWeekMetadata[week] = weekMetadata[week];
+
+        console.log(`\n${'='.repeat(70)}`);
+        const headerParts = [`📅 WEEK ${week}`];
+        if (globalWeekNumber >= 1) {
+            headerParts.push(`Calendar Week ${globalWeekNumber}`);
+        }
+        headerParts.push(weekRangeLabel);
+        console.log(headerParts.join(' • '));
+        console.log(`${'='.repeat(70)}`);
+        
+        // Track weekly assignments
+        const weeklyAssignments = {};
+        staff.forEach(s => {
+            weeklyAssignments[s.id] = { early: 0, late: 0 };
+        });
+
+        const rotationOffset = (week - 1) % WORK_DAYS.length;
+        const dayProfiles = WORK_DAYS.map((day, dayIndex) => {
+            const dayDate = new Date(weekStartDate);
+            dayDate.setDate(dayDate.getDate() + dayIndex);
+            const dateISO = formatDateLocal(dayDate);
+
+            const availableForDay = activeStaff.filter(s => {
+                const workDays = getWorkDaysForWeek(s, week);
+                if (!workDays.includes(day)) {
+                    return false;
+                }
+
+                if (s.status === 'inactive') {
+                    return false;
+                }
+
+                if (s.leavePeriods && s.leavePeriods.length > 0) {
+                    const isOnLeavePeriod = s.leavePeriods.some(period => {
+                        const leaveStart = new Date(period.start + 'T00:00:00');
+                        const leaveEnd = new Date(period.end + 'T23:59:59');
+                        return (dayDate >= leaveStart && dayDate <= leaveEnd);
+                    });
+                    if (isOnLeavePeriod) {
+                        return false;
+                    }
+                }
+
+                if (s.leaveDays && s.leaveDays.length > 0) {
+                    if (s.leaveDays.some(ld => ld.date === dateISO)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            return { day, dayIndex, dayDate, dateISO, available: availableForDay };
+        });
+
+        dayProfiles.sort((a, b) => {
+            if (a.available.length !== b.available.length) {
+                return a.available.length - b.available.length; // harder (smaller pools) first
+            }
+            const rotatedA = (a.dayIndex - rotationOffset + WORK_DAYS.length) % WORK_DAYS.length;
+            const rotatedB = (b.dayIndex - rotationOffset + WORK_DAYS.length) % WORK_DAYS.length;
+            return rotatedA - rotatedB;
+        });
+
+        console.log(`\nDay processing order (Week ${week}, hardest first): ${dayProfiles.map(p => `${p.day} [${p.available.length}]`).join(' → ')}`);
+
+        dayProfiles.forEach(({ day, dayDate, available: availableForDay }) => {
+            console.log(`\n--- ${day.toUpperCase()} (Week ${week}) ---`);
+            
+            // Debug logging for this day - show who's available
+            const staffAvailableNames = availableForDay.map(s => s.name).join(', ');
+            console.log(`Available staff (${availableForDay.length}): ${staffAvailableNames}`);
+            
+            if (availableForDay.length === 0) {
+                console.warn(`No staff available for Week ${week}, ${day} (${dayDate.toDateString()})`);
+                return;
+            }
+
+            if (availableForDay.length < 4) {
+                console.warn(`Only ${availableForDay.length} staff available for Week ${week}, ${day} - may have unfilled shifts`);
+            }
+
+            // Assign 2 EARLY shifts
+            const assignedEarlyIds = [];
+            for (let i = 0; i < 2; i++) {
+                // Filter for early shift: must be available for the day AND not have early week-off
+                const earlyAvailable = availableForDay.filter(s => 
+                    !assignedEarlyIds.includes(s.id) &&
+                    !(s.weekOffNum === week && s.weekOffShiftType === 'early')
+                );
+                
+                const earlyCandidate = selectBestCandidateV6({
+                    availableStaff: earlyAvailable,
+                    shiftType: 'early',
+                    day,
+                    week,
+                    staffStats,
+                    weeklyAssignments,
+                    perPersonTargets,
+                    cumulativeStats,
+                    avoidOppositeFlipHard: true,
+                    disallowSameDayOtherShift: true,
+                    excludeIds: [],
+                    enableLogging: true
+                });
+
+                if (earlyCandidate) {
+                    // SAFETY CHECK: Verify they actually work this day
+                    const candidateWorkDays = getWorkDaysForWeek(earlyCandidate, week);
+                    if (!candidateWorkDays.includes(day)) {
+                        console.error(`❌ BUG: Assigning ${earlyCandidate.name} to Week ${week}, ${day} EARLY but they don't work ${day}!`);
+                        console.error(`   Their work days for week ${week}: ${candidateWorkDays.join(', ')}`);
+                    }
+                    
+                    roster[week][day].early[i] = earlyCandidate.id;
+                    assignedEarlyIds.push(earlyCandidate.id);
+                    staffStats[earlyCandidate.id].earlyCount++;
+                    staffStats[earlyCandidate.id].totalShifts++;
+                    weeklyAssignments[earlyCandidate.id].early++;
+                    
+                    // Log assignment details
+                    const weekTotal = weeklyAssignments[earlyCandidate.id].early + weeklyAssignments[earlyCandidate.id].late;
+                    console.log(`   ✓ Assigned ${earlyCandidate.name} to W${week} ${day} EARLY #${i+1} → Now has ${weekTotal} shifts this week (${weeklyAssignments[earlyCandidate.id].early}e/${weeklyAssignments[earlyCandidate.id].late}l)`);
+                    
+                    // Remember their preferred day
+                    if (!preferredEarlyDay[earlyCandidate.id]) {
+                        preferredEarlyDay[earlyCandidate.id] = day;
+                    }
+                } else {
+                    console.warn(`Could not assign early shift ${i+1} for Week ${week}, ${day}`);
+                }
+            }
+
+            // Assign 2 LATE shifts (strongly prefer different people from early)
+            const assignedLateIds = [];
+            for (let i = 0; i < 2; i++) {
+                // Filter for late shift: must be available for the day AND not have late week-off
+                const lateAvailable = availableForDay.filter(s => 
+                    !assignedEarlyIds.includes(s.id) && 
+                    !assignedLateIds.includes(s.id) &&
+                    !(s.weekOffNum === week && s.weekOffShiftType === 'late')
+                );
+                
+                // First try with strict caps (exclude those who did early today)
+                let lateCandidate = selectBestCandidateV6({
+                    availableStaff: lateAvailable,
+                    shiftType: 'late',
+                    day,
+                    week,
+                    staffStats,
+                    weeklyAssignments,
+                    perPersonTargets,
+                    cumulativeStats,
+                    avoidOppositeFlipHard: true,
+                    disallowSameDayOtherShift: true,
+                    excludeIds: assignedEarlyIds,
+                    enableLogging: true
+                });
+
+                const candidateWouldBreakCap = lateCandidate && ((weeklyAssignments[lateCandidate.id].early + weeklyAssignments[lateCandidate.id].late) >= WEEKLY_MAX_SHIFTS);
+                if (!lateCandidate || candidateWouldBreakCap) {
+                    const weekCapSafePool = availableForDay.filter(s =>
+                        !assignedLateIds.includes(s.id) &&
+                        !(s.weekOffNum === week && s.weekOffShiftType === 'late') &&
+                        ((weeklyAssignments[s.id].early + weeklyAssignments[s.id].late) < WEEKLY_MAX_SHIFTS)
+                    );
+
+                    if (weekCapSafePool.length > 0) {
+                        const alternateLateCandidate = selectBestCandidateV6({
+                            availableStaff: weekCapSafePool,
+                            shiftType: 'late',
+                            day,
+                            week,
+                            staffStats,
+                            weeklyAssignments,
+                            perPersonTargets,
+                            cumulativeStats,
+                            avoidOppositeFlipHard: false,
+                            disallowSameDayOtherShift: false,
+                            excludeIds: assignedLateIds,
+                            enableLogging: true
+                        });
+
+                        if (alternateLateCandidate) {
+                            if (candidateWouldBreakCap) {
+                                console.log('   ♻️ Reassigning late shift to protect weekly cap before entering emergency mode (same-day fallback)');
+                            }
+                            lateCandidate = alternateLateCandidate;
+                        }
+                    }
+                }
+
+                if (lateCandidate && ((weeklyAssignments[lateCandidate.id].early + weeklyAssignments[lateCandidate.id].late) >= WEEKLY_MAX_SHIFTS)) {
+                    lateCandidate = null;
+                }
+
+                // Last resort: allow same-day both shifts if absolutely needed
+                if (!lateCandidate) {
+                    lateCandidate = selectBestCandidateV6({
+                        availableStaff: availableForDay.filter(s => !assignedLateIds.includes(s.id)),
+                        shiftType: 'late',
+                        day,
+                        week,
+                        staffStats,
+                        weeklyAssignments,
+                        perPersonTargets,
+                        cumulativeStats,
+                        avoidOppositeFlipHard: false,
+                        disallowSameDayOtherShift: false,
+                        excludeIds: [],
+                        enableLogging: true
+                    });
+                    if (lateCandidate && assignedEarlyIds.includes(lateCandidate.id)) {
+                        console.warn(`⚠️ Week ${week}, ${day}: ${lateCandidate.name} doing both early and late (LAST RESORT)`);
+                    }
+                }
+
+                if (lateCandidate) {
+                    // SAFETY CHECK: Verify they actually work this day
+                    const candidateWorkDays = getWorkDaysForWeek(lateCandidate, week);
+                    if (!candidateWorkDays.includes(day)) {
+                        console.error(`❌ BUG: Assigning ${lateCandidate.name} to Week ${week}, ${day} LATE but they don't work ${day}!`);
+                        console.error(`   Their work days for week ${week}: ${candidateWorkDays.join(', ')}`);
+                    }
+                    
+                    roster[week][day].late[i] = lateCandidate.id;
+                    assignedLateIds.push(lateCandidate.id);
+                    staffStats[lateCandidate.id].lateCount++;
+                    staffStats[lateCandidate.id].totalShifts++;
+                    weeklyAssignments[lateCandidate.id].late++;
+                    
+                    // Log assignment details
+                    const weekTotal = weeklyAssignments[lateCandidate.id].early + weeklyAssignments[lateCandidate.id].late;
+                    console.log(`   ✓ Assigned ${lateCandidate.name} to W${week} ${day} LATE #${i+1} → Now has ${weekTotal} shifts this week (${weeklyAssignments[lateCandidate.id].early}e/${weeklyAssignments[lateCandidate.id].late}l)`);
+                    
+                    // Remember their preferred day
+                    if (!preferredLateDay[lateCandidate.id]) {
+                        preferredLateDay[lateCandidate.id] = day;
+                    }
+                } else {
+                    console.error(`❌ Could not assign late shift ${i+1} for Week ${week}, ${day}`);
+                }
+            }
+        });
+        
+        // Weekly summary with fairness warnings
+        const summaryMeta = weekMetadata[week] || {};
+        const summaryLabelParts = [`📊 WEEK ${week}`];
+        if (summaryMeta.globalWeek >= 1) {
+            summaryLabelParts.push(`Calendar Week ${summaryMeta.globalWeek}`);
+        }
+        if (summaryMeta.rangeLabel) {
+            summaryLabelParts.push(summaryMeta.rangeLabel);
+        }
+        console.log(`\n${summaryLabelParts.join(' • ')}`);
+        const weekSummary = [];
+        let emergencyCount = 0;
+        let imbalanceWarnings = [];
+        
+        for (const staffMember of staff) {
+            const total = weeklyAssignments[staffMember.id].early + weeklyAssignments[staffMember.id].late;
+            if (total > 0) {
+                const badge = total >= 4 ? '⚠️' : total === 3 ? '⚡' : '✓';
+                if (total >= 3) emergencyCount++;
+                
+                // Check for balance issues
+                const early = weeklyAssignments[staffMember.id].early;
+                const late = weeklyAssignments[staffMember.id].late;
+                const diff = early - late;
+                if (total === 2 && Math.abs(diff) === 2) {
+                    imbalanceWarnings.push(`${staffMember.name} (${early}e/${late}l - only one shift type)`);
+                }
+                
+                weekSummary.push({
+                    name: staffMember.name,
+                    total: total,
+                    early: early,
+                    late: late,
+                    badge: badge
+                });
+            }
+        }
+        weekSummary.sort((a, b) => b.total - a.total);
+        weekSummary.forEach(item => {
+            console.log(`   ${item.badge} ${item.name.padEnd(10)} → ${item.total} shifts (${item.early}e/${item.late}l)`);
+        });
+        
+        // Fairness warnings
+        if (emergencyCount > 0) {
+            console.warn(`   ⚠️ ${emergencyCount} staff assigned 3+ shifts this week (emergency mode used)`);
+        }
+        if (imbalanceWarnings.length > 0) {
+            console.warn(`   ⚠️ Single shift-type weeks: ${imbalanceWarnings.join(', ')}`);
+        }
+    }
+
+    // LOGIC FIX #3: Save this period to history with staff snapshot
+    const startDateStr = document.getElementById('period-start').value;
+    const endDateStr = document.getElementById('period-end').value;
+    const numWeeks = parseInt(document.getElementById('period-weeks').value);
+    
+    // Build stats object with week off info
+    const periodStats = {};
+    const staffSnapshot = {}; // NEW: Store staff names at time of generation
+    
+    staff.forEach(s => {
+        // Store staff snapshot for historical viewing
+        staffSnapshot[s.id] = {
+            name: s.name,
+            scheduleType: s.scheduleType
+        };
+        
+        if (staffStats[s.id]) {
+            periodStats[s.id] = {
+                name: s.name,
+                earlyCount: staffStats[s.id].earlyCount,
+                lateCount: staffStats[s.id].lateCount,
+                totalShifts: staffStats[s.id].totalShifts,
+                weekOffNum: s.weekOffNum,
+                weekOffShiftType: s.weekOffShiftType
+            };
+        }
+    });
+    
+    currentPeriod = {
+        startDate: startDateStr,
+        endDate: endDateStr,
+        weeks: numWeeks,
+        roster: JSON.parse(JSON.stringify(roster)), // Deep copy
+        stats: periodStats,
+        staffSnapshot: staffSnapshot, // NEW: Store staff snapshot
+        generatedAt: new Date().toISOString(),
+        weekMetadata: weekMetadata
+    };
+
+    console.log('\nCalendar alignment for this roster:');
+    Object.entries(weekMetadata).forEach(([wk, meta]) => {
+        const label = meta.globalWeek >= 1 ? `Calendar Week ${meta.globalWeek}` : 'Calendar week unavailable';
+        console.log(`  • Week ${wk}: ${label} (${meta.rangeLabel})`);
+    });
+
+    // Display stats BEFORE adding to history (so getCumulativeStats doesn't include this period)
+    renderRoster();
+    showStats(staffStats, weeks, activeStaff.length, perPersonTargets);
+    
+    // CRITICAL VALIDATION: Double-check every assignment
+    console.log('');
+    console.log('='.repeat(70));
+    console.log('POST-GENERATION VALIDATION');
+    console.log('='.repeat(70));
+    let validationErrors = 0;
+    
+    for (let week = 1; week <= weeks; week++) {
+        WORK_DAYS.forEach(day => {
+            const shifts = roster[week][day];
+            
+            // Validate early shifts
+            shifts.early.forEach((staffId, i) => {
+                if (!staffId) return;
+                const staffMember = staff.find(s => s.id === staffId);
+                if (!staffMember) {
+                    console.error(`❌ VALIDATION ERROR: Week ${week}, ${day} early[${i}] - Staff ID ${staffId} not found!`);
+                    validationErrors++;
+                    return;
+                }
+                
+                const workDays = getWorkDaysForWeek(staffMember, week);
+                if (!workDays.includes(day)) {
+                    console.error(`❌ VALIDATION ERROR: Week ${week}, ${day} early[${i}] - ${staffMember.name} assigned but doesn't work ${day}!`);
+                    console.error(`   ${staffMember.name}'s work days for week ${week}: ${workDays.join(', ')}`);
+                    validationErrors++;
+                }
+            });
+            
+            // Validate late shifts
+            shifts.late.forEach((staffId, i) => {
+                if (!staffId) return;
+                const staffMember = staff.find(s => s.id === staffId);
+                if (!staffMember) {
+                    console.error(`❌ VALIDATION ERROR: Week ${week}, ${day} late[${i}] - Staff ID ${staffId} not found!`);
+                    validationErrors++;
+                    return;
+                }
+                
+                const workDays = getWorkDaysForWeek(staffMember, week);
+                if (!workDays.includes(day)) {
+                    console.error(`❌ VALIDATION ERROR: Week ${week}, ${day} late[${i}] - ${staffMember.name} assigned but doesn't work ${day}!`);
+                    console.error(`   ${staffMember.name}'s work days for week ${week}: ${workDays.join(', ')}`);
+                    validationErrors++;
+                }
+            });
+        });
+    }
+    
+    if (validationErrors === 0) {
+        console.log('✓ Validation passed: All assignments respect work schedules!');
+    } else {
+        console.error(`❌ Validation FAILED: ${validationErrors} error(s) found!`);
+        console.error('   Please share the full console output for debugging.');
+    }
+    console.log('='.repeat(70));
+    console.log('');
+    
+    // NOW add to history
+    rosterPeriods.push(currentPeriod);
+    
+    saveState();
+    renderPreviousPeriods();
+    renderStaffList(); // Re-render to show updated week-off assignments
+    showNotification('Roster generated successfully!', 'success');
+}
+
+// ============================================================================
+// CONSTRAINT-BASED SHIFT ASSIGNMENT ALGORITHM V6
+// ============================================================================
+// 
+// PHILOSOPHY: Explicit Priority Hierarchy (No Opaque Scoring)
+// Each constraint is evaluated in order, with clear pass/fail criteria
+// 
+// CONSTRAINT HIERARCHY (strictest → most flexible):
+// 
+// 1. WORK SCHEDULE & LEAVE (HARD BLOCK - checked before function call)
+//    - Cannot assign if not working that day
+//    - Cannot assign if on leave
+// 
+// 2. WEEKLY CAP (HARD CONSTRAINT - max 2 shifts/week normally)
+//    - Prefer: 0-1 shifts this week
+//    - Accept: 2 shifts this week (1 early + 1 late ideal)
+//    - Emergency only: 3 shifts this week (if no other options)
+// 
+// 3. NO CONSECUTIVE OPPOSITE SHIFT FLIPS (HARD CONSTRAINT)
+//    - Cannot work late shift after early shift next day
+//    - Cannot work early shift after late shift next day
+//    - Need recovery time between shift type changes
+// 
+// 3b. NO CONSECUTIVE SAME SHIFT REPEATS (HARD CONSTRAINT - relaxed in phase 3)
+//    - Avoid early→early or late→late on consecutive days
+//    - Provides better variety and work-life balance
+// 
+// 3c. EMERGENCY MODE REST (HARD CONSTRAINT in emergency modes)
+//    - When assigning 3rd shift, exclude people who worked yesterday (any shift)
+//    - Ensures proper rest between shifts when already working 3x/week
+//    - Critical for health and safety
+// 
+// 4. FRIDAY ROTATION (MODERATE CONSTRAINT)
+//    - Avoid same person on Friday every week
+//    - Spread Friday shifts fairly across all staff
+// 
+// 5. SEVERE IMBALANCE CORRECTION (PRIORITY 1 in sorting)
+//    - If someone has 2+ more early than late (or vice versa) for part-time
+//    - Or 3+ more for full-time staff
+//    - They MUST get the opposite shift type
+//    - Critical for part-time staff like Nathan
+// 
+// 6. DISTRIBUTE 3-SHIFT WEEKS FAIRLY (PRIORITY 2 in sorting)
+//    - ALWAYS prefer staff with fewer 3-shift weeks from previous weeks
+//    - This ensures emergency shifts are distributed fairly across the period
+//    - Applied BEFORE weekly cap check so it influences all decisions
+//    - Spreads burden evenly - prevents same people getting 3-shift weeks repeatedly
+// 
+// 7. OPPOSITE SHIFT FATIGUE GUARD (PRIORITY 2b in sorting)
+//    - Even when flips are technically allowed, prefer candidates who avoid
+//      creating late→early or early→late patterns
+//    - Protects rest cycles without fully blocking emergency fallbacks
+// 
+// 8. WEEKLY CAP (PRIORITY 3 in sorting)
+//    - Prefer staff with fewer shifts this week
+//    - 0 shifts > 1 shift > 2 shifts
+// 
+// 9. SHIFT TYPE VARIETY (PRIORITY 4 in sorting)
+//    - Prefer 1 early + 1 late over 2 early or 2 late
+//    - Better work-life balance and fairness
+// 
+// 10. QUOTA GAP (PRIORITY 5 in sorting)
+//    - Choose whoever is furthest below their proportional target
+//    - Ensures everyone gets their fair share
+// 
+// 11. BALANCE CORRECTION (PRIORITY 6 in sorting)
+//    - Nudge toward 50/50 early/late split
+//    - Proactive intervention for ±1-2 shift imbalances
+// 
+// 12. FRIDAY ROTATION (PRIORITY 7 in sorting)
+//    - Prefer staff who haven't had Friday shifts recently
+// 
+// 13. TOTAL QUOTA GAP (PRIORITY 8 in sorting)
+//    - Consider overall shift deficit
+// 
+// ============================================================================
+// Constants
+const WEEKLY_MAX_SHIFTS = 2;           // target cap (only emergency goes to 3)
+const WEEKLY_MAX_PER_TYPE = 1;         // ideal: 1 early + 1 late per week
+
+// Helper: Friday rotation helpers
+function hadFridayLastWeek(staffId, week) {
+    if (week <= 1) return false;
+    const prev = roster[week - 1];
+    if (!prev || !prev['friday']) return false;
+    const fri = prev['friday'];
+    const ids = [...(fri.early || []), ...(fri.late || [])].filter(Boolean);
+    return ids.includes(staffId);
+}
+
+function countFridaysUpToWeek(staffId, upToWeek) {
+    let count = 0;
+    for (let w = 1; w < upToWeek; w++) {
+        const weekData = roster[w];
+        if (!weekData || !weekData['friday']) continue;
+        const fri = weekData['friday'];
+        const ids = [...(fri.early || []), ...(fri.late || [])].filter(Boolean);
+        if (ids.includes(staffId)) count++;
+    }
+    return count;
+}
+
+function countFridayEarliesUpToWeek(staffId, upToWeek) {
+    let count = 0;
+    for (let w = 1; w < upToWeek; w++) {
+        const weekData = roster[w];
+        if (!weekData || !weekData['friday']) continue;
+        const fri = weekData['friday'];
+        const earlyIds = (fri.early || []).filter(Boolean);
+        if (earlyIds.includes(staffId)) count++;
+    }
+    return count;
+}
+
+function countFridayLatesUpToWeek(staffId, upToWeek) {
+    let count = 0;
+    for (let w = 1; w < upToWeek; w++) {
+        const weekData = roster[w];
+        if (!weekData || !weekData['friday']) continue;
+        const fri = weekData['friday'];
+        const lateIds = (fri.late || []).filter(Boolean);
+        if (lateIds.includes(staffId)) count++;
+    }
+    return count;
+}
+
+function countDayOfWeekUpToWeek(staffId, dayOfWeek, upToWeek) {
+    // Count how many times this person has worked this specific day of the week
+    let count = 0;
+    for (let w = 1; w < upToWeek; w++) {
+        const weekData = roster[w];
+        if (!weekData || !weekData[dayOfWeek]) continue;
+        const dayData = weekData[dayOfWeek];
+        const ids = [...(dayData.early || []), ...(dayData.late || [])].filter(Boolean);
+        if (ids.includes(staffId)) count++;
+    }
+    return count;
+}
+
+// ============================================================================
+// CONSTRAINT-BASED CANDIDATE SELECTION (No Arbitrary Scoring)
+// ============================================================================
+// Philosophy: Explicit constraint hierarchy, transparent decisions
+// No composite scores - just ordered priorities with clear rules
+// ============================================================================
+
+function selectBestCandidateV6({
+    availableStaff,
+    shiftType,
+    day,
+    week,
+    staffStats,
+    weeklyAssignments,
+    perPersonTargets,
+    cumulativeStats,
+    avoidOppositeFlipHard = true,
+    avoidFridayRepeatHard = true,
+    disallowSameDayOtherShift = true,
+    excludeIds = [],
+    enableLogging = false
+}) {
+    if (availableStaff.length === 0) return null;
+
+    const otherShiftType = shiftType === 'early' ? 'late' : 'early';
+
+    // Helper: Get staff metrics for constraint checking
+    function getMetrics(s) {
+        const targets = perPersonTargets[s.id] || { targetEarly: 0, targetLate: 0, targetTotal: 0, availTotal: 0 };
+        const histEarly = cumulativeStats[s.id]?.earlyCount || 0;
+        const histLate = cumulativeStats[s.id]?.lateCount || 0;
+        const histTotal = cumulativeStats[s.id]?.totalShifts || 0;
+
+        const curEarly = staffStats[s.id].earlyCount - histEarly;
+        const curLate = staffStats[s.id].lateCount - histLate;
+        const curTotal = staffStats[s.id].totalShifts - histTotal;
+
+        const weekEarly = weeklyAssignments[s.id].early;
+        const weekLate = weeklyAssignments[s.id].late;
+        const weekTotal = weekEarly + weekLate;
+
+        // How far below their targets?
+        const gapTotal = targets.targetTotal - curTotal;
+        const gapThisType = (shiftType === 'early') ? (targets.targetEarly - curEarly) : (targets.targetLate - curLate);
+        
+        // Early/late balance within this period
+        const balanceDiff = curEarly - curLate; // +ve = more early, -ve = more late
+        
+        // Has this shift type already this week?
+        const hasThisTypeThisWeek = (shiftType === 'early') ? (weekEarly > 0) : (weekLate > 0);
+        
+        // Friday history (overall, early-specific, and late-specific)
+        const priorFridays = countFridaysUpToWeek(s.id, week);
+        const priorFridayEarlies = countFridayEarliesUpToWeek(s.id, week);
+        const priorFridayLates = countFridayLatesUpToWeek(s.id, week);
+        
+        // Day of week distribution (how many times worked THIS specific day before)
+        const priorThisDayCount = countDayOfWeekUpToWeek(s.id, day, week);
+        
+        // Part-time status and work day detection
+        const isPartTime = targets.availTotal > 0 && targets.availTotal <= 24;
+        
+        // Check if this is one of their regular work days (for part-timers)
+        // This gives priority to part-timers ON THE DAYS THEY ACTUALLY WORK
+        const workDays = getWorkDaysForWeek(s.id, week);
+        const isTheirWorkDay = workDays.includes(day);
+
+        // Count how many times this person has had 3+ shifts in a week so far
+        let threeShiftWeekCount = 0;
+        for (let w = 1; w < week; w++) {
+            const weekData = roster[w];
+            if (!weekData) continue;
+            
+            let weekShiftCount = 0;
+            for (const d of WORK_DAYS) {
+                const dayData = weekData[d];
+                if (!dayData) continue;
+                if (dayData.early && dayData.early.includes(s.id)) weekShiftCount++;
+                if (dayData.late && dayData.late.includes(s.id)) weekShiftCount++;
+            }
+            
+            if (weekShiftCount >= 3) threeShiftWeekCount++;
+        }
+
+        return {
+            targets,
+            curEarly,
+            curLate,
+            curTotal,
+            weekEarly,
+            weekLate,
+            weekTotal,
+            gapTotal,
+            gapThisType,
+            balanceDiff,
+            hasThisTypeThisWeek,
+            priorFridays,
+            priorFridayEarlies,
+            priorFridayLates,
+            priorThisDayCount,
+            isPartTime,
+            isTheirWorkDay,
+            threeShiftWeekCount
+        };
+    }
+
+    // HARD CONSTRAINTS: Must pass to be eligible
+    function passesHardConstraints(s, { allowWeekCap3 = false, allowFlip = false, allowSameDayBoth = false, allowFridayRepeat = false, allowConsecutiveSame = false, allowYesterdayWorkers = true, preventWorseningImbalance = true, preventSameShiftTwice = true }) {
+        if (excludeIds.includes(s.id)) return false;
+        
+        const m = getMetrics(s);
+
+        // Prevent creating a new severe imbalance unless we are in the final fallback.
+        if (preventWorseningImbalance) {
+            const predictedDiff = shiftType === 'early' ? m.balanceDiff + 1 : m.balanceDiff - 1;
+            const imbalanceThreshold = m.isPartTime ? 1.5 : 2.5;
+            if (Math.abs(predictedDiff) > imbalanceThreshold) return false;
+        }
+
+        // Encourage 1 early + 1 late per week before relaxing constraints.
+        if (preventSameShiftTwice) {
+            const thisTypeCount = shiftType === 'early' ? m.weekEarly : m.weekLate;
+            const otherTypeCount = shiftType === 'early' ? m.weekLate : m.weekEarly;
+            if (thisTypeCount > 0 && otherTypeCount === 0 && m.weekTotal < WEEKLY_MAX_SHIFTS) {
+                return false;
+            }
+        }
+
+        // 1. Weekly cap (max 2 shifts per week, only 3 in emergency)
+        if (!allowWeekCap3 && m.weekTotal >= 2) return false;
+        if (allowWeekCap3 && m.weekTotal >= 3) return false;
+
+        // 2. Same day both shifts not allowed
+        if (!allowSameDayBoth && disallowSameDayOtherShift) {
+            const existing = roster[week]?.[day]?.[otherShiftType] || [];
+            if (existing.includes(s.id)) return false;
+        }
+
+        // 3. No consecutive opposite shift flips (late→early or early→late)
+        if (!allowFlip && avoidOppositeFlipHard) {
+            if (wouldCreateOppositeFlip(s.id, week, day, shiftType, roster)) return false;
+        }
+
+        // 3b. No consecutive same shift repeats (early→early or late→late)
+        if (!allowConsecutiveSame) {
+            if (hadShiftYesterday(s.id, shiftType, day, week)) return false;
+        }
+
+        // 3c. Emergency mode only: exclude people who worked yesterday (any shift)
+        // This provides better rest and work-life balance
+        if (!allowYesterdayWorkers && m.weekTotal >= 2) {
+            // Only apply this constraint when assigning 3rd shift (emergency mode)
+            if (workedYesterday(s.id, day, week)) return false;
+        }
+
+        // 4. Friday rotation (avoid same person every week)
+        if (!allowFridayRepeat && avoidFridayRepeatHard && day === 'friday') {
+            if (hadFridayLastWeek(s.id, week)) return false;
+        }
+
+        return true;
+    }
+
+    // CONSTRAINT-BASED SORTING: Explicit priority order
+    function compareByConstraints(a, b) {
+        const mA = getMetrics(a);
+        const mB = getMetrics(b);
+
+        // ====================================================================
+        // PRIORITY 1: SEVERE IMBALANCE CORRECTION (ABSOLUTE PRIORITY)
+        // ====================================================================
+        // This is the most important rule. If a staff member has a severe imbalance
+        // (e.g., 3+ more early than late), they MUST be prioritized for the opposite
+        // shift type to correct the imbalance. This rule overrides all others.
+        const aIsCriticallyImbalanced = (shiftType === 'late' && mA.balanceDiff >= 2.5) || (shiftType === 'early' && mA.balanceDiff <= -2.5);
+        const bIsCriticallyImbalanced = (shiftType === 'late' && mB.balanceDiff >= 2.5) || (shiftType === 'early' && mB.balanceDiff <= -2.5);
+
+        if (aIsCriticallyImbalanced && !bIsCriticallyImbalanced) return -1; // A MUST be chosen
+        if (bIsCriticallyImbalanced && !aIsCriticallyImbalanced) return 1;  // B MUST be chosen
+
+        // ====================================================================
+        // PRIORITY 2: DISTRIBUTE 3-SHIFT WEEKS FAIRLY ACROSS THE PERIOD
+        // ====================================================================
+        // To ensure emergency shifts are fairly distributed, prefer staff who have had
+        // fewer 3-shift weeks in previous weeks. This spreads the burden evenly.
+        // This is checked BEFORE weekly cap to ensure fair distribution over time.
+        if (mA.threeShiftWeekCount !== mB.threeShiftWeekCount) {
+            return mA.threeShiftWeekCount - mB.threeShiftWeekCount; // Fewer 3-shift weeks is better
+        }
+
+        // ====================================================================
+        // PRIORITY 2a: PART-TIME STAFF ON THEIR WORK DAYS (HIGHEST PRIORITY)
+        // ====================================================================
+        // Part-time staff have LIMITED availability (e.g., Jenny only Mon/Wed/Thu).
+        // When comparing a part-timer on their work day vs anyone else, ALWAYS prefer
+        // the part-timer. This ensures they get shifts on the days they're available.
+        // This is checked BEFORE Friday fairness because part-timers need this boost.
+        if (mA.isPartTime && mA.isTheirWorkDay && (!mB.isPartTime || !mB.isTheirWorkDay)) {
+            // A is part-time on their work day, B is not
+            return -1;
+        }
+        if (mB.isPartTime && mB.isTheirWorkDay && (!mA.isPartTime || !mA.isTheirWorkDay)) {
+            // B is part-time on their work day, A is not
+            return 1;
+        }
+
+        // ====================================================================
+        // PRIORITY 2b: OPPOSITE SHIFT FATIGUE GUARD
+        // ====================================================================
+        // Even when flips are allowed, prefer candidates who keep their shift
+        // sequence consistent. Creating late→early or early→late patterns is
+        // more tiring, so only do it if everyone would cause the same flip.
+        const aCreatesFlip = wouldCreateOppositeFlip(a.id, week, day, shiftType, roster);
+        const bCreatesFlip = wouldCreateOppositeFlip(b.id, week, day, shiftType, roster);
+        if (aCreatesFlip && !bCreatesFlip) return 1;
+        if (bCreatesFlip && !aCreatesFlip) return -1;
+
+        // ====================================================================
+        // PRIORITY 2c: FRIDAY FAIRNESS (CRITICAL FOR WORK-LIFE BALANCE)
+        // ====================================================================
+        // On Fridays, prioritize fair distribution across all weeks BEFORE considering
+        // weekly caps. Nobody should work 3+ Fridays while others work 0-1 Fridays.
+        // This is a quality-of-life issue - people don't want to "own" all the Fridays.
+        if (day === 'friday') {
+            // Strongly prefer people with fewer Fridays in previous weeks
+            if (mA.priorFridays !== mB.priorFridays) {
+                return mA.priorFridays - mB.priorFridays; // Fewer is better
+            }
+        }
+
+        // ====================================================================
+        // PRIORITY 2d: FRIDAY EARLY FAIRNESS (SHIFT-TYPE SPECIFIC)
+        // ====================================================================
+        // When assigning Friday EARLY shifts, prefer people with fewer Friday early shifts.
+        // This ensures everyone gets a fair rotation of Friday early shifts.
+        if (day === 'friday' && shiftType === 'early') {
+            if (mA.priorFridayEarlies !== mB.priorFridayEarlies) {
+                return mA.priorFridayEarlies - mB.priorFridayEarlies; // Fewer Friday earlies is better
+            }
+        }
+
+        // ====================================================================
+        // PRIORITY 2e: FRIDAY LATE FAIRNESS (EVEN MORE CRITICAL!)
+        // ====================================================================
+        // Friday LATE shifts are especially undesirable (impacts weekend plans).
+        // If assigning a Friday late, STRONGLY prefer people with fewer Friday lates.
+        // This is checked AFTER overall Friday count and Friday early count.
+        if (day === 'friday' && shiftType === 'late') {
+            if (mA.priorFridayLates !== mB.priorFridayLates) {
+                return mA.priorFridayLates - mB.priorFridayLates; // Fewer late Fridays is better
+            }
+        }
+
+        // ====================================================================
+        // PRIORITY 2f: DAY-OF-WEEK DISTRIBUTION (SPREAD PEOPLE ACROSS DAYS)
+        // ====================================================================
+        // Prefer people who have worked this specific day of the week LESS often.
+        // This prevents someone from "owning" all the Mondays or all the Tuesdays.
+        // Only apply if there's a significant difference (2+ times)
+        if (Math.abs(mA.priorThisDayCount - mB.priorThisDayCount) >= 2) {
+            return mA.priorThisDayCount - mB.priorThisDayCount; // Fewer is better
+        }
+
+        // ====================================================================
+        // PRIORITY 3: WEEKLY CAP (prefer those with 0-1 shifts this week)
+        // ====================================================================
+        // Strongly prefer people with fewer shifts this week
+        if (mA.weekTotal !== mB.weekTotal) {
+            return mA.weekTotal - mB.weekTotal; // Fewer is better
+        }
+        
+        // ====================================================================
+        // PRIORITY 3a: BOOST PART-TIME STAFF WHO ARE SIGNIFICANTLY BEHIND QUOTA
+        // ====================================================================
+        // Part-time staff with limited availability need extra help reaching their targets
+        // If a part-timer is 2+ shifts behind, give them priority when comparing equal weekly loads
+        if (mA.isPartTime && !mB.isPartTime && mA.gapTotal >= 2.0) return -1;
+        if (mB.isPartTime && !mA.isPartTime && mB.gapTotal >= 2.0) return 1;
+        
+        // Both part-time and significantly behind? Prioritize by gap
+        if (mA.isPartTime && mB.isPartTime && (mA.gapTotal >= 2.0 || mB.gapTotal >= 2.0)) {
+            const gapDiff = Math.abs(mB.gapTotal - mA.gapTotal);
+            if (gapDiff > 0.5) {
+                return mB.gapTotal - mA.gapTotal; // Bigger gap wins
+            }
+        }
+        
+        // ====================================================================
+        // PRIORITY 3b: PREFER EARLY OVER LATE FOR 3RD SHIFT (EMERGENCY MODE)
+        // ====================================================================
+        // When both candidates are about to get their 3rd shift this week,
+        // prefer to assign EARLY shifts (better work-life balance)
+        if (mA.weekTotal === 2 && mB.weekTotal === 2) {
+            // IMPORTANT: When giving someone their 3rd shift, strongly prefer it to be EARLY
+            // Early shifts are better for work-life balance (finish earlier in the day)
+            // This means: when comparing candidates for their 3rd shift, prefer those who:
+            // - Have more late shifts already (so the 3rd can be early to balance)
+            // - Have fewer early shifts already (so they have room for an early)
+            
+            // If this is an EARLY shift assignment and both getting 3rd shift:
+            // Prefer people with more lates / fewer earlies (better to give them an early)
+            if (shiftType === 'early') {
+                // Primary: More late shifts = better candidate for early shift
+                const lateDiff = mB.weekLate - mA.weekLate;
+                if (lateDiff !== 0) return lateDiff; // More lates this week wins
+                
+                // Secondary: Fewer early shifts = better candidate for early shift
+                const earlyDiff = mA.weekEarly - mB.weekEarly;
+                if (earlyDiff !== 0) return earlyDiff; // Fewer earlies this week wins
+            } 
+            // If this is a LATE shift assignment and both getting 3rd shift:
+            // Only accept this if they already have more earlies than lates this week
+            else {
+                // Strongly prefer people who have MORE earlies this week
+                const earlyDiff = mB.weekEarly - mA.weekEarly;
+                if (earlyDiff !== 0) return earlyDiff; // More earlies this week wins
+                
+                // Secondary: Fewer late shifts = better candidate for late shift
+                const lateDiff = mA.weekLate - mB.weekLate;
+                if (lateDiff !== 0) return lateDiff; // Fewer lates this week wins
+            }
+        }
+
+        // ====================================================================
+        // PRIORITY 4: AVOID DUPLICATE SHIFT TYPE IN SAME WEEK
+        // ====================================================================
+        // Prefer 1 early + 1 late over 2 early or 2 late
+        // ENHANCED: Strongly prevent single shift-type weeks (e.g., 2e/0l or 0e/2l)
+        // If someone has 1+ shifts but ALL of one type, strongly prefer giving them the opposite type
+        if (mA.weekTotal >= 1 || mB.weekTotal >= 1) {
+            const aHasOnlyOneType = (mA.weekTotal >= 1) && (mA.weekEarly === 0 || mA.weekLate === 0);
+            const bHasOnlyOneType = (mB.weekTotal >= 1) && (mB.weekEarly === 0 || mB.weekLate === 0);
+            
+            // If A has only one type and needs this type to balance, A wins
+            if (aHasOnlyOneType && !mA.hasThisTypeThisWeek && !bHasOnlyOneType) return -1;
+            if (bHasOnlyOneType && !mB.hasThisTypeThisWeek && !aHasOnlyOneType) return 1;
+            
+            // Both have only one type? Prioritize by who has more shifts (more urgent to balance)
+            if (aHasOnlyOneType && bHasOnlyOneType && !mA.hasThisTypeThisWeek && !mB.hasThisTypeThisWeek) {
+                return mB.weekTotal - mA.weekTotal; // More shifts = more urgent
+            }
+        }
+        
+        // Standard: prefer those who don't have this shift type yet this week
+        if (mA.hasThisTypeThisWeek !== mB.hasThisTypeThisWeek) {
+            return mA.hasThisTypeThisWeek ? 1 : -1; // False (don't have) is better
+        }
+
+        // ====================================================================
+        // PRIORITY 5: QUOTA GAP (furthest below target)
+        // ====================================================================
+        // Choose whoever needs more shifts to reach their proportional target
+        const gapDiff = Math.abs(mB.gapThisType - mA.gapThisType);
+        if (gapDiff > 0.5) {
+            return mB.gapThisType - mA.gapThisType; // Bigger gap wins
+        }
+
+        // ====================================================================
+        // PRIORITY 6: MODERATE IMBALANCE CORRECTION (±1-1.5 shifts)
+        // ====================================================================
+        // Nudge toward better balance (but not as strong as Priority 1)
+        // For part-time: intervene at ±1, for full-time: ±1.5 (more aggressive than before)
+        // This catches imbalances like 2e/3l or 2e/4l earlier
+        const aImbalanceThreshold = mA.isPartTime ? 1 : 1.5;
+        const bImbalanceThreshold = mB.isPartTime ? 1 : 1.5;
+        
+        const aImbalanceModerate = (
+            (shiftType === 'late' && mA.balanceDiff >= aImbalanceThreshold) ||
+            (shiftType === 'early' && mA.balanceDiff <= -aImbalanceThreshold)
+        );
+        const bImbalanceModerate = (
+            (shiftType === 'late' && mB.balanceDiff >= bImbalanceThreshold) ||
+            (shiftType === 'early' && mB.balanceDiff <= -bImbalanceThreshold)
+        );
+        if (aImbalanceModerate && !bImbalanceModerate) return -1;
+        if (bImbalanceModerate && !aImbalanceModerate) return 1;
+
+        // ====================================================================
+        // PRIORITY 7: FRIDAY ROOM BEFORE CAP (SECONDARY TIEBREAKER)
+        // ====================================================================
+        // If Friday counts are tied, prefer whoever has more room before hitting weekly cap
+        // This helps prevent emergency mode by choosing people with 0-1 shifts this week
+        if (day === 'friday') {
+            const aRoomBeforeCap = 2 - mA.weekTotal; // How many more shifts can they take?
+            const bRoomBeforeCap = 2 - mB.weekTotal;
+            if (aRoomBeforeCap !== bRoomBeforeCap) {
+                return bRoomBeforeCap - aRoomBeforeCap; // More room is better
+            }
+        }
+
+        // ====================================================================
+        // PRIORITY 8: TOTAL QUOTA GAP
+        // ====================================================================
+        const totalGapDiff = Math.abs(mB.gapTotal - mA.gapTotal);
+        if (totalGapDiff > 0.5) {
+            return mB.gapTotal - mA.gapTotal;
+        }
+
+        // ====================================================================
+        // TIE-BREAKER: Randomize to break ties
+        // ====================================================================
+        return Math.random() - 0.5;
+    }
+
+    // Progressive constraint relaxation if needed
+    // IMPORTANT: When forced to assign 3rd shift, prefer EARLY over LATE for work-life balance
+    const phases = [
+        { preventWorseningImbalance: true,  preventSameShiftTwice: true,  allowWeekCap3: false, allowFlip: false, allowConsecutiveSame: false, allowYesterdayWorkers: true,  allowSameDayBoth: false, allowFridayRepeat: false, label: 'strict' },
+        { preventWorseningImbalance: true,  preventSameShiftTwice: true,  allowWeekCap3: false, allowFlip: false, allowConsecutiveSame: true,  allowYesterdayWorkers: true,  allowSameDayBoth: false, allowFridayRepeat: false, label: 'allow-consecutive-same' },
+    { preventWorseningImbalance: true,  preventSameShiftTwice: true,  allowWeekCap3: false, allowFlip: true,  allowConsecutiveSame: true,  allowYesterdayWorkers: true,  allowSameDayBoth: false, allowFridayRepeat: false, label: 'allow-flip' },
+    { preventWorseningImbalance: true,  preventSameShiftTwice: true,  allowWeekCap3: false, allowFlip: true,  allowConsecutiveSame: true,  allowYesterdayWorkers: true,  allowSameDayBoth: false, allowFridayRepeat: true,  label: 'allow-friday-repeat' },
+    // New relaxation step: allow a second shift of the same type before giving anyone a 3rd shift this week
+    { preventWorseningImbalance: true,  preventSameShiftTwice: false, allowWeekCap3: false, allowFlip: true,  allowConsecutiveSame: true,  allowYesterdayWorkers: true,  allowSameDayBoth: false, allowFridayRepeat: true,  label: 'allow-same-type-repeat' },
+        // NEW: Try emergency mode for EARLY shifts first (better for work-life balance)
+        // IMPORTANT: Exclude people who worked yesterday to ensure proper rest
+        { preventWorseningImbalance: true,  preventSameShiftTwice: true,  allowWeekCap3: true,  allowFlip: true,  allowConsecutiveSame: true,  allowYesterdayWorkers: false, allowSameDayBoth: false, allowFridayRepeat: true,  label: 'emergency-early-only', earlyShiftOnly: true },
+        // LAST RESORT: Emergency mode for any shift including late, but still no yesterday workers
+        { preventWorseningImbalance: true,  preventSameShiftTwice: false, allowWeekCap3: true,  allowFlip: true,  allowConsecutiveSame: true,  allowYesterdayWorkers: false, allowSameDayBoth: true,  allowFridayRepeat: true,  label: 'emergency-any' },
+        // ABSOLUTE LAST RESORT: Disable the imbalance firewall if no one can be found
+        { preventWorseningImbalance: false, preventSameShiftTwice: false, allowWeekCap3: true,  allowFlip: true,  allowConsecutiveSame: true,  allowYesterdayWorkers: false, allowSameDayBoth: true,  allowFridayRepeat: true,  label: 'emergency-final' }
+    ];
+
+    for (const phase of phases) {
+        // Skip early-only phase if this is a late shift (let it fall through to emergency-any)
+        if (phase.earlyShiftOnly && shiftType === 'late') continue;
+        
+        // Filter by hard constraints
+        const eligible = availableStaff.filter(s => passesHardConstraints(s, phase));
+        if (eligible.length === 0) continue;
+
+        // Sort by constraint priorities
+        eligible.sort(compareByConstraints);
+
+        const winner = eligible[0];
+
+        // Enhanced logging with decision reasoning
+        if (enableLogging) {
+            const topN = Math.min(5, eligible.length);
+            console.log(`   📊 Top ${topN} candidates (${phase.label}):`);
+            
+            // Show comparison reasoning between top 2
+            if (eligible.length >= 2) {
+                const m1 = getMetrics(eligible[0]);
+                const m2 = getMetrics(eligible[1]);
+                
+                // Determine why #1 beat #2
+                let reason = '';
+                
+                // Check Priority 1: Critical imbalance
+                if (!reason && ((shiftType === 'late' && m1.balanceDiff >= 3) || (shiftType === 'early' && m1.balanceDiff <= -3))) {
+                    reason = `CRITICAL IMBALANCE (${m1.balanceDiff > 0 ? '+' : ''}${m1.balanceDiff})`;
+                }
+                
+                // Check Priority 2: 3-shift week distribution (fair emergency shift distribution)
+                if (!reason && m1.threeShiftWeekCount !== m2.threeShiftWeekCount) {
+                    reason = `fewer 3-shift weeks so far (${m1.threeShiftWeekCount} vs ${m2.threeShiftWeekCount})`;
+                }
+                
+                // Check Priority 2a: Part-time on their work day
+                if (!reason && m1.isPartTime && m1.isTheirWorkDay && (!m2.isPartTime || !m2.isTheirWorkDay)) {
+                    reason = `PART-TIME on their work day (${eligible[0].name} works ${day}s)`;
+                }
+                if (!reason && m2.isPartTime && m2.isTheirWorkDay && (!m1.isPartTime || !m1.isTheirWorkDay)) {
+                    reason = `PART-TIME on their work day (${eligible[1].name} works ${day}s)`;
+                }
+                
+                // Check Priority 2b: Opposite shift fatigue guard
+                if (!reason) {
+                    const winnerCreatesFlip = wouldCreateOppositeFlip(eligible[0].id, week, day, shiftType, roster);
+                    const runnerCreatesFlip = wouldCreateOppositeFlip(eligible[1].id, week, day, shiftType, roster);
+                    if (!winnerCreatesFlip && runnerCreatesFlip) {
+                        reason = 'avoids back-to-back opposite shift flip';
+                    }
+                }
+                
+                // Check Priority 2c: Friday fairness
+                if (!reason && day === 'friday' && m1.priorFridays < m2.priorFridays) {
+                    reason = `fewer Fridays so far (${m1.priorFridays} vs ${m2.priorFridays})`;
+                }
+                
+                // Check Priority 2d: Friday EARLY fairness
+                if (!reason && day === 'friday' && shiftType === 'early' && m1.priorFridayEarlies < m2.priorFridayEarlies) {
+                    reason = `fewer Friday EARLIES so far (${m1.priorFridayEarlies} vs ${m2.priorFridayEarlies})`;
+                }
+                
+                // Check Priority 2e: Friday LATE fairness
+                if (!reason && day === 'friday' && shiftType === 'late' && m1.priorFridayLates < m2.priorFridayLates) {
+                    reason = `fewer Friday LATES so far (${m1.priorFridayLates} vs ${m2.priorFridayLates})`;
+                }
+                
+                // Check Priority 2f: Day-of-week distribution
+                if (!reason && Math.abs(m1.priorThisDayCount - m2.priorThisDayCount) >= 2) {
+                    reason = `fewer ${day}s so far (${m1.priorThisDayCount} vs ${m2.priorThisDayCount})`;
+                }
+                
+                // Check Priority 3: Weekly cap
+                if (!reason && m1.weekTotal < m2.weekTotal) {
+                    reason = `fewer shifts this week (${m1.weekTotal} vs ${m2.weekTotal})`;
+                }
+                
+                // Check Priority 4: Shift type variety
+                if (!reason && m1.weekTotal === m2.weekTotal && !m1.hasThisTypeThisWeek && m2.hasThisTypeThisWeek) {
+                    reason = 'first time getting this shift type this week';
+                }
+                
+                // Check Priority 5: Quota gap
+                if (!reason && Math.abs(m1.gapThisType - m2.gapThisType) > 0.5) {
+                    reason = `bigger quota gap (${m1.gapThisType.toFixed(1)} vs ${m2.gapThisType.toFixed(1)})`;
+                }
+                
+                // Check Priority 6: Moderate imbalance
+                if (!reason && ((shiftType === 'late' && m1.balanceDiff >= 1) || (shiftType === 'early' && m1.balanceDiff <= -1))) {
+                    reason = `needs balance correction (${m1.balanceDiff > 0 ? '+' : ''}${m1.balanceDiff})`;
+                }
+                
+                // Check Priority 7: Friday room before cap (secondary tiebreaker for Fridays)
+                if (!reason && day === 'friday') {
+                    const r1 = 2 - m1.weekTotal;
+                    const r2 = 2 - m2.weekTotal;
+                    if (r1 > r2) {
+                        reason = `more room before weekly cap (${r1} vs ${r2})`;
+                    }
+                }
+                
+                // Fallback: random tie-breaker
+                if (!reason) {
+                    reason = `random tie-break`;
+                }
+                
+                console.log(`   🔍 Decision: "${eligible[0].name}" chosen over "${eligible[1].name}" because ${reason}`);
+            }
+            
+            for (let i = 0; i < topN; i++) {
+                const s = eligible[i];
+                const m = getMetrics(s);
+                const icon = i === 0 ? '👑' : `   ${i+1}.`;
+                const earlyLate = `${m.curEarly}e/${m.curLate}l`;
+                const hasTypeMarker = m.hasThisTypeThisWeek ? '✗' : '○';
+                const balanceMarker = Math.abs(m.balanceDiff) >= 3 ? '⚠️' : Math.abs(m.balanceDiff) >= 1 ? '~' : '✓';
+                
+                // Show part-time work day indicator
+                const partTimeMarker = m.isPartTime && m.isTheirWorkDay ? '📅' : '';
+                
+                // Show day-of-week history (with Friday early/late breakdown on Fridays)
+                let dayHistory = `${m.priorThisDayCount}${day.substring(0,3)}`;
+                if (day === 'friday') {
+                    dayHistory = `${m.priorFridayEarlies}fe/${m.priorFridayLates}fl`;
+                }
+                
+                // Show 3-shift week history in emergency mode
+                const threeWeekInfo = (phase.label === 'emergency-early-only' || phase.label === 'emergency-any') && m.threeShiftWeekCount > 0 ? ` [${m.threeShiftWeekCount}×3wk]` : '';
+                
+                console.log(`      ${icon} ${s.name.padEnd(10)} ${partTimeMarker}| Week: ${m.weekTotal}/wk ${hasTypeMarker} | Total: ${m.curTotal} (${earlyLate}) ${balanceMarker} | Gap: ${m.gapThisType.toFixed(1)}/${m.gapTotal.toFixed(1)} | ${dayHistory}${threeWeekInfo}`);
+            }
+            
+            const wm = getMetrics(winner);
+            if (phase.label === 'emergency-early-only') {
+                console.warn(`      ⚠️ EMERGENCY MODE (EARLY PREFERRED): Assigned 3rd shift this week to ${winner.name}`);
+            } else if (phase.label === 'emergency-any') {
+                console.warn(`      ⚠️ EMERGENCY MODE: Had to assign 3rd shift this week to ${winner.name}`);
+            }
+        }
+
+        return winner;
+    }
+
+    return null; // Should never happen with emergency phase
+}
+
+// Helper function to check if staff had opposite shift yesterday
+function hadOppositeShiftYesterday(staffId, shiftType, currentDay, currentWeek) {
+    const prev = getPreviousDay(currentDay, currentWeek);
+    if (!prev) return false;
+    
+    const oppositeShiftType = shiftType === 'early' ? 'late' : 'early';
+    const yesterdayShifts = roster[prev.week]?.[prev.day]?.[oppositeShiftType];
+    if (!yesterdayShifts) return false;
+    
+    return yesterdayShifts.includes(staffId);
+}
+
+// Render roster table
+function renderRoster() {
+    const tbody = document.getElementById('roster-tbody');
+    
+    if (Object.keys(roster).length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty-state">
+                    <span class="material-icons">calendar_month</span>
+                    <p>Add staff and click "Generate Roster" to create the schedule</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const startDateStr = document.getElementById('period-start').value;
+    const weeks = parseInt(document.getElementById('period-weeks').value);
+
+    let html = '';
+    
+    for (let week = 1; week <= weeks; week++) {
+        const meta = currentWeekMetadata[week] || buildWeekMetadata(week, startDateStr);
+        const weekStartDate = new Date(meta.startDate + 'T00:00:00');
+        const weekEndDate = new Date(meta.endDate + 'T00:00:00');
+        const dateRange = meta.rangeLabel;
+        const calendarWeekLabel = meta.globalWeek >= 1 ? `Calendar Week ${meta.globalWeek}` : 'Calendar Week —';
+        
+        html += `<tr class="week-header">
+            <td colspan="6">
+                <div class="week-date-header">
+                    <div>
+                        <span>Week ${week}</span>
+                        <span class="week-date-range">${dateRange}</span>
+                    </div>
+                    <span class="week-date-range" style="font-size: 0.75rem; color: var(--gray-600);">${calendarWeekLabel}</span>
+                </div>
+            </td>
+        </tr>`;
+        html += '<tr>';
+        html += `<td style="font-weight: 600;">Shifts</td>`;
+        
+        WORK_DAYS.forEach((day, dayIndex) => {
+            const shifts = roster[week][day];
+            
+            // Calculate actual date for this day (Monday=0, Tuesday=1, etc.)
+            const dayDate = new Date(weekStartDate);
+            dayDate.setDate(dayDate.getDate() + dayIndex);
+            const dayDateStr = dayDate.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+            
+            html += '<td>';
+            html += `<div style="font-size: 0.75rem; font-weight: 600; color: var(--primary-solid); margin-bottom: var(--space-sm);">${dayDateStr}</div>`;
+            html += '<div class="shift-cell">';
+            
+            // Early shift - 2 people
+            const earlyStaff1 = staff.find(s => s.id === shifts.early[0]);
+            const earlyStaff2 = staff.find(s => s.id === shifts.early[1]);
+            
+            if (earlyStaff1 || earlyStaff2) {
+                html += `<div class="shift-slot early">
+                    <span class="material-icons">wb_sunny</span>
+                    <div>
+                        ${earlyStaff1 ? earlyStaff1.name : '<span style="color: var(--gray-500);">TBD</span>'}
+                        ${earlyStaff2 ? `<br>${earlyStaff2.name}` : '<br><span style="color: var(--gray-500);">TBD</span>'}
+                    </div>
+                </div>`;
+            } else {
+                html += '<div class="empty-slot">No early shift</div>';
+            }
+            
+            // Late shift - 2 people
+            const lateStaff1 = staff.find(s => s.id === shifts.late[0]);
+            const lateStaff2 = staff.find(s => s.id === shifts.late[1]);
+            
+            if (lateStaff1 || lateStaff2) {
+                html += `<div class="shift-slot late">
+                    <span class="material-icons">nights_stay</span>
+                    <div>
+                        ${lateStaff1 ? lateStaff1.name : '<span style="color: var(--gray-500);">TBD</span>'}
+                        ${lateStaff2 ? `<br>${lateStaff2.name}` : '<br><span style="color: var(--gray-500);">TBD</span>'}
+                    </div>
+                </div>`;
+            } else {
+                html += '<div class="empty-slot">No late shift</div>';
+            }
+            
+            html += '</div></td>';
+        });
+        
+        html += '</tr>';
+    }
+    
+    tbody.innerHTML = html;
+}
+
+// Show statistics
+function showStats(staffStats, weeks, activeStaffCount, perPersonTargets = {}) {
+    console.log('');
+    console.log('='.repeat(70));
+    console.log('PHASE 4: FAIRNESS ANALYSIS');
+    console.log('='.repeat(70));
+    console.log('');
+    
+    const totalShiftsInPeriod = weeks * 5 * 2 * 2;
+    
+    const statsArray = Object.values(staffStats);
+    const totalAssigned = statsArray.reduce((sum, s) => sum + s.totalShifts, 0);
+    
+    console.log('Overall Summary:');
+    console.log(`  Total shifts needed: ${totalShiftsInPeriod}`);
+    console.log(`  Total shifts assigned: ${totalAssigned} (${(totalAssigned/totalShiftsInPeriod*100).toFixed(1)}%)`);
+    console.log('');
+    
+    // Sort by name for easier reading
+    const sortedStats = statsArray.map(s => {
+        const staffMember = staff.find(sm => sm.name === s.name);
+        const targets = perPersonTargets[staffMember?.id];
+        return { ...s, targets, staffMember };
+    }).sort((a, b) => a.name.localeCompare(b.name));
+    
+    console.log('Individual Staff Analysis (This Period Only):');
+    console.log('-'.repeat(70));
+    
+    sortedStats.forEach(s => {
+        // Get cumulative stats to separate period vs historical
+        const cumul = getCumulativeStats()[s.staffMember?.id];
+        const periodEarly = s.earlyCount - (cumul?.earlyCount || 0);
+        const periodLate = s.lateCount - (cumul?.lateCount || 0);
+        const periodTotal = s.totalShifts - (cumul?.totalShifts || 0);
+        
+        // Calculate quota adherence
+        let quotaStatus = '?';
+        let quotaInfo = '';
+        if (s.targets) {
+            const targetTotal = s.targets.targetTotal;
+            const quotaDiff = periodTotal - targetTotal;
+            const quotaPct = targetTotal > 0 ? ((quotaDiff / targetTotal) * 100) : 0;
+            
+            quotaStatus = Math.abs(quotaDiff) < 0.5 ? '✓✓' :
+                         Math.abs(quotaDiff) < 1.5 ? '✓' :
+                         Math.abs(quotaDiff) < 2.5 ? '~' : '⚠️';
+            quotaInfo = `${periodTotal.toFixed(0)}/${targetTotal.toFixed(1)} (${quotaDiff >= 0 ? '+' : ''}${quotaDiff.toFixed(1)})`;
+        }
+        
+        // Early/late balance
+        const totalPersonalShifts = periodEarly + periodLate;
+        const earlyPct = totalPersonalShifts > 0 ? ((periodEarly / totalPersonalShifts) * 100).toFixed(0) : 50;
+        const latePct = totalPersonalShifts > 0 ? ((periodLate / totalPersonalShifts) * 100).toFixed(0) : 50;
+        const balanceDiff = Math.abs(periodEarly - periodLate);
+        const balanceStatus = balanceDiff === 0 ? '✓✓' : 
+                             balanceDiff === 1 ? '✓' : 
+                             balanceDiff === 2 ? '~' : '⚠️';
+        
+        const availInfo = s.targets ? `(${s.targets.availTotal}av)` : '';
+        const weekOffInfo = s.staffMember?.weekOffNum ? 
+            ` | W${s.staffMember.weekOffNum} ${s.staffMember.weekOffShiftType}↓` : '';
+        
+        console.log(
+            `${s.name.padEnd(12)} ${quotaStatus} Quota: ${quotaInfo} ${availInfo} ` +
+            `| ${balanceStatus} Balance: ${periodEarly}e/${periodLate}l (${earlyPct}/${latePct}%)` +
+            weekOffInfo
+        );
+    });
+    
+    console.log('');
+    console.log('Status Indicators:');
+    console.log('  Quota: ✓✓ = ±0.5 | ✓ = ±1.5 | ~ = ±2.5 | ⚠️ = >2.5 from target');
+    console.log('  Balance: ✓✓ = Perfect 50/50 | ✓ = ±1 shift | ~ = ±2 shifts | ⚠️ = ±3+ shifts');
+    console.log('');
+    
+    // Calculate and display weekly distribution
+    console.log('Weekly Distribution Analysis:');
+    console.log('-'.repeat(70));
+    
+    // Build weekly distribution map
+    const weeklyDist = {};
+    staff.forEach(s => {
+        weeklyDist[s.id] = { name: s.name, weeks: {} };
+        for (let w = 1; w <= weeks; w++) {
+            weeklyDist[s.id].weeks[w] = 0;
+        }
+    });
+    
+    // Count shifts per person per week
+    for (let week = 1; week <= weeks; week++) {
+        WORK_DAYS.forEach(day => {
+            const shifts = roster[week]?.[day];
+            if (!shifts) return;
+            
+            [...shifts.early, ...shifts.late].forEach(staffId => {
+                if (staffId && weeklyDist[staffId]) {
+                    weeklyDist[staffId].weeks[week]++;
+                }
+            });
+        });
+    }
+    
+    // Display weekly breakdown for each staff member
+    const weeklyDistArray = Object.values(weeklyDist).sort((a, b) => a.name.localeCompare(b.name));
+    
+    weeklyDistArray.forEach(person => {
+        const weekCounts = [];
+        let maxInWeek = 0;
+        let totalShifts = 0;
+        
+        for (let w = 1; w <= weeks; w++) {
+            const count = person.weeks[w];
+            weekCounts.push(`W${w}:${count}`);
+            maxInWeek = Math.max(maxInWeek, count);
+            totalShifts += count;
+        }
+        
+        // Status indicator for weekly spread - stricter criteria
+        let spreadStatus;
+        if (maxInWeek <= 2 && totalShifts / weeks <= 2.1) {
+            spreadStatus = '✓✓'; // Perfect - consistent 2 or less
+        } else if (maxInWeek <= 2) {
+            spreadStatus = '⚡';  // Good - max 2 but varies
+        } else {
+            spreadStatus = '⚠️';  // Problem - 3+ in a week
+        }
+        const avgPerWeek = (totalShifts / weeks).toFixed(1);
+        
+        console.log(
+            `${person.name.padEnd(12)} ${spreadStatus} [${weekCounts.join(' ')}] ` +
+            `Max: ${maxInWeek}/week | Avg: ${avgPerWeek}/week`
+        );
+    });
+    
+    console.log('');
+    console.log('Weekly Spread Indicators:');
+    console.log('  ✓✓ = Max 2 shifts/week (ideal - TARGET) | ⚡ = Varies but max 2/week (acceptable) | ⚠️ = 3+ shifts/week (VIOLATION!)');
+    console.log('');
+    
+    // Summary statistics
+    const totalEarly = statsArray.reduce((sum, s) => sum + s.earlyCount, 0);
+    const totalLate = statsArray.reduce((sum, s) => sum + s.lateCount, 0);
+    const overallBalance = totalEarly > 0 ? (totalLate / totalEarly) : 1;
+    
+    const perfectBalance = statsArray.filter(s => Math.abs(s.earlyCount - s.lateCount) === 0).length;
+    const excellentBalance = statsArray.filter(s => Math.abs(s.earlyCount - s.lateCount) === 1).length;
+    const goodBalance = statsArray.filter(s => Math.abs(s.earlyCount - s.lateCount) === 2).length;
+    const needsReview = statsArray.filter(s => Math.abs(s.earlyCount - s.lateCount) > 2).length;
+    
+    console.log('Fairness Summary:');
+    console.log(`  Overall early/late ratio: ${totalEarly}:${totalLate} (${(overallBalance * 100).toFixed(1)}%)`);
+    console.log(`  Perfect balance (50/50): ${perfectBalance} staff`);
+    console.log(`  Excellent balance (±1): ${excellentBalance} staff`);
+    console.log(`  Good balance (±2): ${goodBalance} staff`);
+    if (needsReview > 0) {
+        console.log(`  Needs review (±3+): ${needsReview} staff ⚠️`);
+        // Show who needs review
+        const imbalancedStaff = statsArray.filter(s => Math.abs(s.earlyCount - s.lateCount) > 2);
+        imbalancedStaff.forEach(s => {
+            const diff = s.earlyCount - s.lateCount;
+            const reason = diff > 0 ? `${diff} more early than late` : `${Math.abs(diff)} more late than early`;
+            console.log(`     - ${s.name}: ${reason} (${s.earlyCount}e/${s.lateCount}l)`);
+        });
+    }
+    
+    // Additional analysis for constraint violations
+    console.log('');
+    console.log('Constraint Violation Summary:');
+    console.log('-'.repeat(70));
+    
+    const weeklyViolations = weeklyDistArray.filter(p => {
+        return Object.values(p.weeks).some(count => count >= 3);
+    });
+    
+    if (weeklyViolations.length > 0) {
+        console.warn(`  ⚠️ Weekly cap violations (3+ shifts/week): ${weeklyViolations.length} staff`);
+        weeklyViolations.forEach(p => {
+            const violationWeeks = [];
+            for (let w = 1; w <= weeks; w++) {
+                if (p.weeks[w] >= 3) violationWeeks.push(`W${w}:${p.weeks[w]}`);
+            }
+            console.warn(`     - ${p.name}: ${violationWeeks.join(', ')}`);
+        });
+    } else {
+        console.log(`  ✓ No weekly cap violations - all staff had ≤2 shifts per week`);
+    }
+    
+    console.log('');
+    console.log('');
+    console.log('Consecutive Day Pattern Analysis:');
+    console.log('-'.repeat(70));
+    
+    let consecutiveOppositeCount = 0;
+    let consecutiveSameCount = 0;
+    let totalConsecutiveDays = 0;
+    
+    for (let week = 1; week <= weeks; week++) {
+        WORK_DAYS.forEach((day, dayIndex) => {
+            if (dayIndex === 0 && week === 1) return; // Skip first day
+            
+            const prev = getPreviousDay(day, week);
+            if (!prev) return;
+            
+            const todayEarly = roster[week]?.[day]?.early || [];
+            const todayLate = roster[week]?.[day]?.late || [];
+            const yesterdayEarly = roster[prev.week]?.[prev.day]?.early || [];
+            const yesterdayLate = roster[prev.week]?.[prev.day]?.late || [];
+            
+            // Check for opposite shift patterns (late→early or early→late)
+            todayEarly.forEach(staffId => {
+                if (staffId && yesterdayLate.includes(staffId)) {
+                    consecutiveOppositeCount++;
+                }
+                if (staffId && yesterdayEarly.includes(staffId)) {
+                    consecutiveSameCount++;
+                }
+                if (staffId) totalConsecutiveDays++;
+            });
+            
+            todayLate.forEach(staffId => {
+                if (staffId && yesterdayEarly.includes(staffId)) {
+                    consecutiveOppositeCount++;
+                }
+                if (staffId && yesterdayLate.includes(staffId)) {
+                    consecutiveSameCount++;
+                }
+                if (staffId) totalConsecutiveDays++;
+            });
+        });
+    }
+    
+    const oppositeShiftPct = totalConsecutiveDays > 0 ? ((consecutiveOppositeCount / totalConsecutiveDays) * 100).toFixed(1) : 0;
+    const sameShiftPct = totalConsecutiveDays > 0 ? ((consecutiveSameCount / totalConsecutiveDays) * 100).toFixed(1) : 0;
+    
+    console.log(`  Total consecutive day assignments: ${totalConsecutiveDays}`);
+    console.log(`  Opposite shift flips (late→early or early→late): ${consecutiveOppositeCount} (${oppositeShiftPct}%)`);
+    console.log(`  Same shift repeats: ${consecutiveSameCount} (${sameShiftPct}%)`);
+    
+    if (consecutiveOppositeCount === 0) {
+        console.log('  ✓✓ Perfect! Zero opposite shift flips on consecutive days');
+    } else if (oppositeShiftPct < 3) {
+        console.log('  ✓ Excellent! Very few opposite shift flips');
+    } else if (oppositeShiftPct < 7) {
+        console.log('  ~ Good! Minimal opposite shift flips');
+    } else {
+        console.log('  ⚠️ Consider regenerating to reduce tiring patterns');
+    }
+    
+    console.log('');
+    console.log('='.repeat(70));
+    console.log('');
+}
+
+// Update stats display
+function updateStats() {
+    document.getElementById('stat-staff').textContent = staff.length;
+}
+
+// Edit staff member
+function editStaff(staffId) {
+    const member = staff.find(s => s.id === staffId);
+    if (!member) return;
+    
+    // Initialize arrays if they don't exist
+    if (!member.leaveDays) member.leaveDays = [];
+    if (!member.leavePeriods) member.leavePeriods = [];
+    
+    document.getElementById('edit-staff-id').value = member.id;
+    document.getElementById('edit-staff-name').value = member.name;
+    document.getElementById('edit-staff-status').value = member.status || 'active';
+    document.getElementById('edit-inactive-date').value = member.inactiveDate || '';
+    
+    // Clear form inputs
+    document.getElementById('new-period-start').value = '';
+    document.getElementById('new-period-end').value = '';
+    document.getElementById('new-period-reason').value = '';
+    document.getElementById('new-leave-day-date').value = '';
+    document.getElementById('new-leave-day-reason').value = '';
+    
+    // Render both lists
+    renderLeavePeriodsList();
+    renderLeaveDaysList();
+    
+    toggleLeaveFields();
+    document.getElementById('staff-edit-modal').style.display = 'flex';
+}
+
+// Render leave days list
+function renderLeaveDaysList() {
+    const staffId = document.getElementById('edit-staff-id').value;
+    const member = staff.find(s => s.id === staffId);
+    if (!member) return;
+    
+    const list = document.getElementById('leave-days-list');
+    
+    if (!member.leaveDays || member.leaveDays.length === 0) {
+        list.innerHTML = '<div class="empty-state" style="padding: var(--space-xl);"><p style="color: var(--gray-400); font-size: 0.875rem;">No individual leave days added</p></div>';
+        return;
+    }
+    
+    const sortedDays = [...member.leaveDays].sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    list.innerHTML = sortedDays.map((leave, index) => {
+        const date = new Date(leave.date);
+        const dateStr = date.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        
+        return `
+            <div class="leave-item day">
+                <span class="material-icons" style="color: var(--warning-dark); font-size: 1.25rem;">event_busy</span>
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; color: var(--gray-900); font-size: 0.875rem;">${dateStr}</div>
+                    ${leave.reason ? `<div style="color: var(--gray-600); font-size: 0.8125rem; margin-top: 2px;">${leave.reason}</div>` : ''}
+                </div>
+                <button onclick="removeLeaveDay(${index})" class="icon-btn delete" title="Remove this leave day">
+                    <span class="material-icons">delete</span>
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+// Add leave day
+function addLeaveDay() {
+    const staffId = document.getElementById('edit-staff-id').value;
+    const member = staff.find(s => s.id === staffId);
+    if (!member) return;
+    
+    const dateInput = document.getElementById('new-leave-day-date').value;
+    const reason = document.getElementById('new-leave-day-reason').value.trim();
+    
+    if (!dateInput) {
+        showNotification('Please select a date', 'warning');
+        return;
+    }
+    
+    if (!member.leaveDays) member.leaveDays = [];
+    
+    if (member.leaveDays.some(d => d.date === dateInput)) {
+        showNotification('This date is already added', 'warning');
+        return;
+    }
+    
+    member.leaveDays.push({ date: dateInput, reason: reason });
+    
+    document.getElementById('new-leave-day-date').value = '';
+    document.getElementById('new-leave-day-reason').value = '';
+    
+    renderLeaveDaysList();
+    saveState();
+    showNotification('Leave day added', 'success');
+}
+
+// Remove leave day
+function removeLeaveDay(index) {
+    const staffId = document.getElementById('edit-staff-id').value;
+    const member = staff.find(s => s.id === staffId);
+    if (!member || !member.leaveDays) return;
+    
+    member.leaveDays.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    const leaveDay = member.leaveDays[index];
+    const dateStr = new Date(leaveDay.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+    
+    if (confirm(`Remove leave day: ${dateStr}?`)) {
+        member.leaveDays.splice(index, 1);
+        renderLeaveDaysList();
+        saveState();
+        renderStaffList();
+        showNotification('Leave day removed', 'success');
+    }
+}
+
+// Render leave periods list
+function renderLeavePeriodsList() {
+    const staffId = document.getElementById('edit-staff-id').value;
+    const member = staff.find(s => s.id === staffId);
+    if (!member) return;
+    
+    const list = document.getElementById('leave-periods-list');
+    
+    if (!member.leavePeriods || member.leavePeriods.length === 0) {
+        list.innerHTML = '<div class="empty-state" style="padding: var(--space-xl);"><p style="color: var(--gray-400); font-size: 0.875rem;">No leave periods added</p></div>';
+        return;
+    }
+    
+    const sortedPeriods = [...member.leavePeriods].sort((a, b) => new Date(a.start) - new Date(b.start));
+    
+    list.innerHTML = sortedPeriods.map((period, index) => {
+        const startDate = new Date(period.start);
+        const endDate = new Date(period.end);
+        const startStr = startDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+        const endStr = endDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+        
+        const durationDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        
+        return `
+            <div class="leave-item period">
+                <span class="material-icons" style="color: var(--info-dark); font-size: 1.25rem;">beach_access</span>
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; color: var(--gray-900); font-size: 0.875rem;">${startStr} - ${endStr}</div>
+                    <div style="color: var(--gray-600); font-size: 0.8125rem; margin-top: 2px;">${durationDays} day${durationDays > 1 ? 's' : ''}</div>
+                    ${period.reason ? `<div style="color: var(--gray-600); font-size: 0.8125rem; margin-top: 2px; font-style: italic;">${period.reason}</div>` : ''}
+                </div>
+                <button onclick="removeLeavePeriod(${index})" class="icon-btn delete" title="Remove this period">
+                    <span class="material-icons">delete</span>
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+// Add leave period
+function addLeavePeriod() {
+    const staffId = document.getElementById('edit-staff-id').value;
+    const member = staff.find(s => s.id === staffId);
+    if (!member) return;
+    
+    const startDate = document.getElementById('new-period-start').value;
+    const endDate = document.getElementById('new-period-end').value;
+    const reason = document.getElementById('new-period-reason').value.trim();
+    
+    if (!startDate || !endDate) {
+        showNotification('Please select both start and end dates', 'warning');
+        return;
+    }
+    
+    if (new Date(startDate) > new Date(endDate)) {
+        showNotification('End date must be after start date', 'error');
+        return;
+    }
+    
+    if (!member.leavePeriods) member.leavePeriods = [];
+    
+    // Check for overlapping periods
+    const newStart = new Date(startDate);
+    const newEnd = new Date(endDate);
+    
+    const overlaps = member.leavePeriods.some(period => {
+        const existingStart = new Date(period.start);
+        const existingEnd = new Date(period.end);
+        return (newStart <= existingEnd && newEnd >= existingStart);
+    });
+    
+    if (overlaps) {
+        showNotification('This period overlaps with an existing leave period', 'warning');
+        return;
+    }
+    
+    member.leavePeriods.push({ start: startDate, end: endDate, reason: reason });
+    
+    document.getElementById('new-period-start').value = '';
+    document.getElementById('new-period-end').value = '';
+    document.getElementById('new-period-reason').value = '';
+    
+    renderLeavePeriodsList();
+    saveState();
+    showNotification('Leave period added', 'success');
+}
+
+// Remove leave period
+function removeLeavePeriod(index) {
+    const staffId = document.getElementById('edit-staff-id').value;
+    const member = staff.find(s => s.id === staffId);
+    if (!member || !member.leavePeriods) return;
+    
+    member.leavePeriods.sort((a, b) => new Date(a.start) - new Date(b.start));
+    
+    const period = member.leavePeriods[index];
+    const startStr = new Date(period.start).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+    const endStr = new Date(period.end).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+    
+    if (confirm(`Remove leave period:\n${startStr} - ${endStr}?`)) {
+        member.leavePeriods.splice(index, 1);
+        renderLeavePeriodsList();
+        saveState();
+        renderStaffList();
+        showNotification('Leave period removed', 'success');
+    }
+}
+
+// Toggle leave/inactive fields based on status
+function toggleLeaveFields() {
+    const status = document.getElementById('edit-staff-status').value;
+    const leaveFields = document.getElementById('leave-fields');
+    const inactiveFields = document.getElementById('inactive-fields');
+    
+    if (status === 'leave') {
+        leaveFields.style.display = 'block';
+        inactiveFields.style.display = 'none';
+    } else if (status === 'inactive') {
+        leaveFields.style.display = 'none';
+        inactiveFields.style.display = 'block';
+    } else {
+        leaveFields.style.display = 'none';
+        inactiveFields.style.display = 'none';
+    }
+}
+
+// Save staff edit
+function saveStaffEdit() {
+    const staffId = document.getElementById('edit-staff-id').value;
+    const member = staff.find(s => s.id === staffId);
+    if (!member) return;
+    
+    const newStatus = document.getElementById('edit-staff-status').value;
+    member.status = newStatus;
+    
+    if (newStatus === 'inactive') {
+        member.inactiveDate = document.getElementById('edit-inactive-date').value;
+    } else {
+        member.inactiveDate = null;
+    }
+    
+    saveState();
+    renderStaffList();
+    closeEditModal();
+    showNotification(`Updated ${member.name}'s information`, 'success');
+}
+
+// Close edit modal
+function closeEditModal(event) {
+    if (event && event.target.id !== 'staff-edit-modal') return;
+    document.getElementById('staff-edit-modal').style.display = 'none';
+}
+
+// Export roster
+function exportRoster() {
+    if (Object.keys(roster).length === 0) {
+        showNotification('Generate a roster first', 'warning');
+        return;
+    }
+
+    if (!currentPeriod) {
+        showNotification('No active period', 'warning');
+        return;
+    }
+
+    let csv = '';
+    
+    const startDate = new Date(currentPeriod.startDate);
+    const monthYear = startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase();
+    csv += `${monthYear} CAU PHONE & LEAVE ROSTER\n`;
+    
+    for (let week = 1; week <= currentPeriod.weeks; week++) {
+        const weekStartDate = new Date(startDate);
+        weekStartDate.setDate(weekStartDate.getDate() + (week - 1) * 7);
+        
+        const dateHeaders = [];
+        WORK_DAYS.forEach((day, dayIndex) => {
+            const dayDate = new Date(weekStartDate);
+            dayDate.setDate(dayDate.getDate() + dayIndex);
+            
+            const dayName = day.charAt(0).toUpperCase() + day.slice(1, 3);
+            const dayNum = dayDate.getDate();
+            const monthName = dayDate.toLocaleDateString('en-US', { month: 'short' });
+            const year = dayDate.getFullYear().toString().slice(-2);
+            
+            dateHeaders.push(`${dayName} ${dayNum} ${monthName} ${year}`);
+        });
+        csv += dateHeaders.join('\t') + '\n';
+        
+        csv += WORK_DAYS.map(() => 'Early Phone Coverage').join('\t') + '\n';
+        
+        const earlyStaff = WORK_DAYS.map(day => {
+            const shifts = roster[week][day];
+            const staff1 = staff.find(s => s.id === shifts.early[0]);
+            const staff2 = staff.find(s => s.id === shifts.early[1]);
+            const name1 = staff1?.name.split(' ')[0] || '';
+            const name2 = staff2?.name.split(' ')[0] || '';
+            
+            if (name1 && name2) return `${name1}/${name2}`;
+            return name1 || name2 || '';
+        });
+        csv += earlyStaff.join('\t') + '\n';
+        
+        csv += WORK_DAYS.map(() => 'Late Phone Coverage').join('\t') + '\n';
+        
+        const lateStaff = WORK_DAYS.map(day => {
+            const shifts = roster[week][day];
+            const staff1 = staff.find(s => s.id === shifts.late[0]);
+            const staff2 = staff.find(s => s.id === shifts.late[1]);
+            const name1 = staff1?.name.split(' ')[0] || '';
+            const name2 = staff2?.name.split(' ')[0] || '';
+            
+            if (name1 && name2) return `${name1}/${name2}`;
+            return name1 || name2 || '';
+        });
+        csv += lateStaff.join('\t') + '\n';
+        
+        csv += WORK_DAYS.map(() => 'Planned Leave').join('\t') + '\n';
+        csv += WORK_DAYS.map(() => '').join('\t') + '\n';
+    }
+    
+    let html = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">\n';
+    html += '<head><meta charset="UTF-8">\n';
+    html += '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>\n';
+    html += '<x:Name>Phone Roster</x:Name>\n';
+    html += '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>\n';
+    html += '</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->\n';
+    html += '</head>\n<body>\n<table border="1">\n';
+    
+    const rows = csv.split('\n');
+    for (let i = 0; i < rows.length; i++) {
+        if (rows[i].trim() === '') {
+            html += '<tr><td colspan="5">&nbsp;</td></tr>\n';
+            continue;
+        }
+        
+        const cells = rows[i].split('\t');
+        html += '<tr>';
+        for (let j = 0; j < cells.length; j++) {
+            html += `<td>${cells[j] || '&nbsp;'}</td>`;
+        }
+        html += '</tr>\n';
+    }
+    
+    html += '</table>\n</body>\n</html>';
+    
+    const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `phone-roster-${new Date().toISOString().split('T')[0]}.xls`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showNotification('Roster exported successfully', 'success');
+}
+
+// Export current staff as JSON file (with metadata)
+function exportStaff() {
+    if (!staff || staff.length === 0) {
+        showNotification('No staff to export', 'warning');
+        return;
+    }
+
+    const payload = {
+        exportedAt: new Date().toISOString(),
+        count: staff.length,
+        staff: staff
+    };
+
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `roster-staff-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showNotification('Staff exported successfully', 'success');
+}
+
+// Handle staff JSON file selection
+function handleStaffImportFile(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const parsed = JSON.parse(e.target.result);
+
+            // Accept either an object with { staff: [...] } or a raw array
+            const importedArray = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.staff) ? parsed.staff : null);
+            if (!importedArray) {
+                showNotification('Invalid staff file format', 'error');
+                return;
+            }
+
+            // Basic validation and normalization
+            const normalized = importedArray.map(s => {
+                // Ensure required fields
+                const obj = Object.assign({}, s);
+                if (!obj.id) obj.id = generateId();
+                if (!obj.name) obj.name = 'Unnamed';
+                if (!obj.scheduleType) obj.scheduleType = 'fixed';
+                if (!obj.workDays) obj.workDays = [];
+                if (!obj.week1Days) obj.week1Days = [];
+                if (!obj.week2Days) obj.week2Days = [];
+                if (!obj.leavePeriods) obj.leavePeriods = [];
+                if (!obj.leaveDays) obj.leaveDays = [];
+                if (!obj.status) obj.status = 'active';
+                return obj;
+            });
+
+            // Ask user whether to replace or merge
+            const replace = confirm('Import staff data:\n\nClick OK to REPLACE existing staff with imported data.\nClick Cancel to MERGE imported staff with existing list (matching IDs will replace existing entries).');
+
+            if (replace) {
+                staff = normalized;
+            } else {
+                // Merge: replace by id if exists, otherwise append
+                const existingById = {};
+                staff.forEach(s => { existingById[s.id] = s; });
+
+                normalized.forEach(s => {
+                    if (existingById[s.id]) {
+                        // Replace existing
+                        const idx = staff.findIndex(x => x.id === s.id);
+                        if (idx >= 0) staff[idx] = s;
+                    } else {
+                        // Add new; ensure unique id
+                        if (staff.find(x => x.id === s.id)) {
+                            s.id = generateId();
+                        }
+                        staff.push(s);
+                    }
+                });
+            }
+
+            // Clear the file input value so same file can be re-imported later if desired
+            event.target.value = '';
+
+            saveState();
+            renderStaffList();
+            updateStats();
+            showNotification('Staff imported successfully', 'success');
+        } catch (err) {
+            console.error('Import error', err);
+            showNotification('Failed to parse staff file', 'error');
+        }
+    };
+    reader.onerror = function() {
+        showNotification('Failed to read file', 'error');
+    };
+    reader.readAsText(file);
+}
+
+// Notifications
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    const icon = type === 'success' ? 'check_circle' : 
+                 type === 'error' ? 'error' : 'warning';
+    
+    notification.innerHTML = `
+        <span class="material-icons">${icon}</span>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.remove(), 3000);
+}
+
+// Utility: Generate unique ID
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
+// Save/Load state
+function saveState() {
+    localStorage.setItem('roster-lite-staff', JSON.stringify(staff));
+    localStorage.setItem('roster-lite-roster', JSON.stringify(roster));
+    localStorage.setItem('roster-lite-periods', JSON.stringify(rosterPeriods));
+    localStorage.setItem('roster-lite-current-period', JSON.stringify(currentPeriod));
+    localStorage.setItem('roster-lite-period-config', lastPeriodConfig);
+}
+
+function loadState() {
+    const savedStaff = localStorage.getItem('roster-lite-staff');
+    const savedRoster = localStorage.getItem('roster-lite-roster');
+    const savedPeriods = localStorage.getItem('roster-lite-periods');
+    const savedCurrentPeriod = localStorage.getItem('roster-lite-current-period');
+    const savedPeriodConfig = localStorage.getItem('roster-lite-period-config');
+    
+    if (savedStaff) staff = JSON.parse(savedStaff);
+    if (savedRoster) {
+        roster = JSON.parse(savedRoster);
+    }
+    if (savedPeriods) rosterPeriods = JSON.parse(savedPeriods);
+    if (savedCurrentPeriod) currentPeriod = JSON.parse(savedCurrentPeriod);
+    if (savedPeriodConfig) lastPeriodConfig = savedPeriodConfig;
+
+    if (currentPeriod && currentPeriod.weekMetadata) {
+        currentWeekMetadata = currentPeriod.weekMetadata;
+    } else {
+        currentWeekMetadata = {};
+    }
+
+    if (savedRoster) {
+        renderRoster();
+    }
+}
+</script>
+</body>
+</html>
