@@ -1,0 +1,161 @@
+{
+  "id": "standard-team",
+  "metadata": {
+    "name": "Standard Business Team",
+    "description": "Generic Monday-Friday office team with basic task categories - good starting point for most organizations",
+    "version": "3.3.0",
+    "icon": "work",
+    "organization": "Generic Business",
+    "staffCount": 5,
+    "taskCount": 8,
+    "author": "Leave Roster Team",
+    "created": "2025-10-21"
+  },
+  "config": {
+    "organization": {
+      "name": "Your Organization",
+      "department": "Your Team",
+      "region": "Your Location",
+      "timezone": "Australia/Sydney"
+    },
+    "workWeek": {
+      "structure": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+      "startDay": "monday",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+      "slaDays": 14
+    },
+    "phoneShifts": {
+      "enabled": false
+    },
+    "features": {
+      "triageAssignments": true,
+      "skillsMatrix": false,
+      "workOnHand": true,
+      "leaveTracking": true,
+      "conflictDetection": true,
+      "monthLocking": false,
+      "shiftSwaps": false,
+      "reportGeneration": true,
+      "buildMode": false
+    },
+    "security": {
+      "buildModePassword": "BUILD"
+    }
+  },
+  "staff": [
+    {
+      "id": "staff-1",
+      "name": "Team Member 1",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "staff-2",
+      "name": "Team Member 2",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "staff-3",
+      "name": "Team Member 3",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "staff-4",
+      "name": "Team Member 4",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "staff-5",
+      "name": "Part-time Member",
+      "workDays": ["monday", "wednesday", "friday"]
+    }
+  ],
+  "tasks": [
+    {
+      "type": "header",
+      "name": "General Tasks - Triage",
+      "id": "header_general",
+      "category": "general",
+      "allowTriage": true
+    },
+    {
+      "type": "task",
+      "id": "inbox",
+      "name": "Inbox Management",
+      "category": "general",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "customer_support",
+      "name": "Customer Support",
+      "category": "general",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "documentation",
+      "name": "Documentation",
+      "category": "general",
+      "skillLevel": 2
+    },
+    {
+      "type": "header",
+      "name": "Projects",
+      "id": "header_projects",
+      "category": "projects",
+      "allowTriage": false
+    },
+    {
+      "type": "task",
+      "id": "project_alpha",
+      "name": "Project Alpha",
+      "category": "projects",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "project_beta",
+      "name": "Project Beta",
+      "category": "projects",
+      "skillLevel": 3
+    },
+    {
+      "type": "header",
+      "name": "Administrative",
+      "id": "header_admin",
+      "category": "admin",
+      "allowTriage": false
+    },
+    {
+      "type": "task",
+      "id": "reporting",
+      "name": "Weekly Reporting",
+      "category": "admin",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "meetings",
+      "name": "Team Meetings",
+      "category": "admin",
+      "skillLevel": 1
+    }
+  ],
+  "categories": [
+    {
+      "id": "general",
+      "name": "General Tasks",
+      "color": "#2563eb"
+    },
+    {
+      "id": "projects",
+      "name": "Projects",
+      "color": "#8b5cf6"
+    },
+    {
+      "id": "admin",
+      "name": "Administrative",
+      "color": "#6b7280"
+    }
+  ]
+}

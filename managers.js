@@ -1,5 +1,6 @@
 import { CONFIG } from './config.js';
 import { DateUtils } from './utils.js';
+import { ScheduleUtils } from './core/schedule-utils.js';
 
 // ===== SKILLS MANAGER =====
 export class SkillsManager {
@@ -222,7 +223,7 @@ export class AssignmentGenerator {
             week.forEach(date => {
                 const dayName = DateUtils.getDayName(date);
                 const isOnLeave = this.getStaffLeave(staff.id, date);
-                const worksThisDay = staff.workDays.includes(dayName);
+                const worksThisDay = ScheduleUtils.isWorkingDay(staff, date);
                 
                 tracker[staff.id].availability[DateUtils.toISODate(date)] = {
                     available: worksThisDay && !isOnLeave,
@@ -1082,7 +1083,7 @@ export class AssignmentGenerator {
                 if (!DateUtils.isWorkingDay(date)) return;
                 
                 const dayName = DateUtils.getDayName(date);
-                const worksThisDay = staff.workDays.includes(dayName);
+                const worksThisDay = ScheduleUtils.isWorkingDay(staff, date);
                 const isOnLeave = this.getStaffLeave(staff.id, date);
                 
                 if (worksThisDay) {
@@ -1130,7 +1131,7 @@ export class AssignmentGenerator {
         if (!staff) return false;
         
         const dayName = DateUtils.getDayName(date);
-        const worksThisDay = staff.workDays.includes(dayName);
+        const worksThisDay = ScheduleUtils.isWorkingDay(staff, date);
         const isOnLeave = this.getStaffLeave(staffId, date);
         
         return worksThisDay && !isOnLeave;

@@ -23,9 +23,315 @@ export const CONFIG = {
 // Or use the Setup Wizard to configure your team from scratch
 export const DEFAULT_STAFF = [];
 export const DEFAULT_TASKS = [];
-export const DEFAULT_SKILLS_MATRIX = {};
 
-// ===== UTILITY CLASSES =====
+// Create default skills matrix with new task-based structure
+    // CAU Administration Inbox Section
+    { 
+        type: 'header', 
+        name: 'CAU Administration Inbox - Triage', 
+        id: 'header_cau_admin', 
+        category: 'cau', 
+        allowTriage: true 
+    },
+    { 
+        type: 'task', 
+        id: 'oir_access_apps', 
+        name: 'OIR Access Applications', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'sanctions_lifts', 
+        name: 'Sanctions Lifts', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'dlr_block_removal', 
+        name: 'Driver Licence Renewal - Online Block Removal', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'vdp_susp_cancel', 
+        name: 'VDP/Suspension/Cancellation', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'create_new_lic_cust', 
+        name: 'Create New Licence/Customer Number', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'dishonoured_payments', 
+        name: 'Dishonoured Payments', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'tag', 
+        name: 'TAG', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'court_appeals', 
+        name: 'Court Appeals - 69/70 Fines Act', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'registry_reconcile', 
+        name: 'Registry Reconcile', 
+        category: 'cau', 
+        skillLevel: 1 
+    },
+
+    // CAU Inbox - CTP Section
+    { 
+        type: 'header', 
+        name: 'CAU Inbox - CTP', 
+        id: 'header_cau_ctp', 
+        category: 'ctp', 
+        allowTriage: true 
+    },
+    { 
+        type: 'task', 
+        id: 'ctp_inbox', 
+        name: 'CAU Inbox - CTP', 
+        category: 'ctp', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'greenslip_retrievals', 
+        name: 'Greenslip Retrievals', 
+        category: 'ctp', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'pending_ctp_billing', 
+        name: 'Pending CTP Billing', 
+        category: 'ctp', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'pending_manual_conf', 
+        name: 'Pending Manual Confirmations - Form A', 
+        category: 'ctp', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'pending_mismatches', 
+        name: 'Pending Mismatches', 
+        category: 'ctp', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'pending_refused_biz', 
+        name: 'Pending Refused Business (CTP004)', 
+        category: 'ctp', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'pending_rej_recon', 
+        name: 'Pending Rejection Reconciliations', 
+        category: 'ctp', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'manual_insurer_susp', 
+        name: 'Manual Insurer Suspensions', 
+        category: 'ctp', 
+        skillLevel: 1 
+    },
+
+    // Info Release Inbox Section
+    { 
+        type: 'header', 
+        name: 'Info Release Inbox - Triage', 
+        id: 'header_info', 
+        category: 'info', 
+        allowTriage: true 
+    },
+    { 
+        type: 'task', 
+        id: 'form_5279_law', 
+        name: 'Form 5279 - Law Enforcement', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'tinsw_team_legal', 
+        name: 'TINSW Team - Legal - Subpoenas CAU, GIPAs, Court Orders(inc FRS)', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'form_943_access', 
+        name: 'Form 943 - Access to Own Personal Records', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'form_5672_deceased', 
+        name: 'Form 5672 - Deceased Estate', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'form_5632_liquidator', 
+        name: 'Form 5632 - Vehicle Search Liquidator', 
+        category: 'info', 
+        skillLevel: 1
+    },
+    { 
+        type: 'task', 
+        id: 'form_5633_buyer_liq', 
+        name: 'Form 5633 - Vehicle Buyer Liquidator', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'form_5656_bankruptcy', 
+        name: 'Form 5656 - Vehicle Search Bankruptcy', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'form_5657_buyer_bank', 
+        name: 'Form 5657 - Vehicle Buyer Bankruptcy', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'form_1046_solicitor', 
+        name: 'Form 1046 - Solicitor', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'form_5376_council', 
+        name: 'Form 5376 - Council', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'form_5689_tinsw', 
+        name: 'Form 5689 - TINSW Teams', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'roi_rev_nsw', 
+        name: 'ROI - Revenue NSW', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'audit_office', 
+        name: 'Audit Office', 
+        category: 'info', 
+        skillLevel: 1 
+    },
+
+    // ROI Interstate Inbox Section
+    { 
+        type: 'header', 
+        name: 'ROI Interstate Inbox - Triage', 
+        id: 'header_roi', 
+        category: 'roi', 
+        allowTriage: true 
+    },
+    { 
+        type: 'task', 
+        id: 'awaiting_pdf', 
+        name: 'Awaiting PDF email', 
+        category: 'roi', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'vehicle_reg_search', 
+        name: 'Vehicle Registration Search', 
+        category: 'roi', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'roi_batch_inbox', 
+        name: 'ROI Batch Inbox', 
+        category: 'roi', 
+        skillLevel: 1 
+    },
+
+    // Printing & Certifying Section
+    { 
+        type: 'header', 
+        name: 'Printing & Certifying', 
+        id: 'header_printing', 
+        category: 'printing', 
+        allowTriage: true 
+    },
+    { 
+        type: 'task', 
+        id: 'printing_police', 
+        name: 'Printing & Certifying OIR 257 Certificates - POLICE', 
+        category: 'printing', 
+        skillLevel: 1 
+    },
+    { 
+        type: 'task', 
+        id: 'printing_personals', 
+        name: 'Printing & Certifying OIR 257 Certificates - PERSONALS', 
+        category: 'printing', 
+        skillLevel: 1 
+    }
+];
+
+// Create default skills matrix with new task-based structure
+const initialTaskSkills = {};
+DEFAULT_TASKS.forEach(task => {
+    if (task.type === 'task') {
+        initialTaskSkills[task.id] = 1; // Default skill level
+    }
+});
+
+export const DEFAULT_SKILLS_MATRIX = {};
+DEFAULT_STAFF.forEach(staff => {
+    DEFAULT_SKILLS_MATRIX[staff.id] = {
+        taskSkills: { ...initialTaskSkills }
+    };
+});
+
+// ===== UTILITY CLASSES (from your paste) =====
 
 // Date utilities
 export class DateUtils {
@@ -306,10 +612,9 @@ export const SystemHealth = {
             staffCount: DEFAULT_STAFF.length,
             taskCount: DEFAULT_TASKS.filter(t => t.type === 'task').length,
             headerCount: DEFAULT_TASKS.filter(t => t.type === 'header').length,
-            skillsMatrixComplete: Object.keys(DEFAULT_SKILLS_MATRIX).length === DEFAULT_STAFF.length || DEFAULT_STAFF.length === 0,
-            workDaysCoverage: DEFAULT_STAFF.filter(s => s.workDays && s.workDays.length >= 4).length,
-            partTimeStaff: DEFAULT_STAFF.filter(s => s.workDays && s.workDays.length < 5).length,
-            usingTemplates: DEFAULT_STAFF.length === 0 && DEFAULT_TASKS.length === 0
+            skillsMatrixComplete: Object.keys(DEFAULT_SKILLS_MATRIX).length === DEFAULT_STAFF.length,
+            workDaysCoverage: DEFAULT_STAFF.filter(s => s.workDays.length >= 4).length,
+            partTimeStaff: DEFAULT_STAFF.filter(s => s.workDays.length < 5).length
         };
     }
 };
@@ -324,17 +629,12 @@ if (!diagnostics.healthy) {
     console.log('Issues found:', diagnostics.issues);
 } else {
     console.log('All modules configured and ready for use');
-    if (diagnostics.usingTemplates) {
-        console.log('✅ Template-based configuration (DEFAULT_STAFF and DEFAULT_TASKS are empty)');
-        console.log('✅ Use the Setup Wizard or load a template to configure your team');
-    } else {
-        console.log('Configuration Summary:');
-        console.log(`✅ Staff Members: ${diagnostics.staffCount}`);
-        console.log(`✅ Tasks: ${diagnostics.taskCount}`);
-        console.log(`✅ Categories: ${CONFIG.CATEGORIES.length}`);
-        console.log(`✅ Skills Matrix: Complete for all ${diagnostics.staffCount} staff members`);
-        console.log(`✅ Work Coverage: ${diagnostics.workDaysCoverage} full-time, ${diagnostics.partTimeStaff} part-time`);
-    }
+    console.log('Configuration Summary:');
+    console.log(`✅ Staff Members: ${diagnostics.staffCount}`);
+    console.log(`✅ Tasks: ${diagnostics.taskCount}`);
+    console.log(`✅ Categories: ${CONFIG.CATEGORIES.length}`);
+    console.log(`✅ Skills Matrix: Complete for all ${diagnostics.staffCount} staff members`);
+    console.log(`✅ Work Coverage: ${diagnostics.workDaysCoverage} full-time, ${diagnostics.partTimeStaff} part-time`);
     console.log('✅ Monday-Friday week structure');
     console.log('✅ Task-based skills matrix');
     console.log('✅ 6-week rotation system');

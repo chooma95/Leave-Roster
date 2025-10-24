@@ -1,0 +1,107 @@
+{
+  "name": "Standard Business Team Template",
+  "description": "Simple Monday-Friday team with basic task assignment (no phone shifts or complex features)",
+  "version": "3.2.0",
+  "config": {
+    "organization": {
+      "name": "Business Team",
+      "timezone": "Australia/Sydney",
+      "region": "Custom"
+    },
+    "workWeek": {
+      "structure": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+      "startDay": "monday",
+      "workingDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    "phoneShifts": {
+      "enabled": false,
+      "shifts": [],
+      "rotationWeeks": 1,
+      "maxStaffPerShift": 1,
+      "allowDoubleShifts": false
+    },
+    "sla": {
+      "enabled": false,
+      "defaultDays": 7,
+      "warningThreshold": 5,
+      "criticalThreshold": 6,
+      "taskOverrides": {}
+    },
+    "features": {
+      "triageAssignments": false,
+      "skillsMatrix": true,
+      "workOnHand": false,
+      "leaveTracking": true,
+      "conflictDetection": true,
+      "monthLocking": false,
+      "shiftSwaps": false,
+      "reportGeneration": false,
+      "buildMode": false
+    },
+    "security": {
+      "buildModePassword": "admin",
+      "requirePasswordForAdmin": true
+    },
+    "display": {
+      "theme": "light",
+      "defaultView": "full",
+      "compactMode": false
+    }
+  },
+  "sampleData": {
+    "staff": [
+      {
+        "id": "staff-1",
+        "name": "Team Member 1",
+        "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      },
+      {
+        "id": "staff-2",
+        "name": "Team Member 2",
+        "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      },
+      {
+        "id": "staff-3",
+        "name": "Team Member 3",
+        "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      }
+    ],
+    "tasks": [
+      {
+        "type": "header",
+        "name": "Project Tasks",
+        "id": "header_projects",
+        "category": "projects",
+        "allowTriage": false
+      },
+      {
+        "type": "task",
+        "id": "development",
+        "name": "Development Work",
+        "category": "projects",
+        "skillLevel": 1
+      },
+      {
+        "type": "task",
+        "id": "testing",
+        "name": "Testing & QA",
+        "category": "projects",
+        "skillLevel": 1
+      },
+      {
+        "type": "task",
+        "id": "documentation",
+        "name": "Documentation",
+        "category": "projects",
+        "skillLevel": 1
+      }
+    ],
+    "categories": [
+      {
+        "id": "projects",
+        "name": "Projects",
+        "color": "#3b82f6"
+      }
+    ]
+  }
+}

@@ -1,0 +1,428 @@
+{
+  "id": "nsw-cau-team",
+  "metadata": {
+    "name": "NSW CAU Team (Your Team)",
+    "description": "NSW Customer Administration Unit - Complete team setup with 14 staff and 50+ tasks",
+    "version": "3.3.0",
+    "icon": "business",
+    "organization": "NSW Government",
+    "staffCount": 14,
+    "taskCount": 52,
+    "author": "NSW Transport CAU",
+    "created": "2025-10-21"
+  },
+  "config": {
+    "organization": {
+      "name": "NSW Department of Transport",
+      "department": "Customer Administration Unit",
+      "region": "Sydney, Australia",
+      "timezone": "Australia/Sydney"
+    },
+    "workWeek": {
+      "structure": ["tuesday", "wednesday", "thursday", "friday", "monday"],
+      "startDay": "tuesday",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+      "slaDays": 14
+    },
+    "phoneShifts": {
+      "enabled": true,
+      "rotationWeeks": 6,
+      "maxStaffPerShift": 2
+    },
+    "features": {
+      "triageAssignments": true,
+      "skillsMatrix": true,
+      "workOnHand": true,
+      "leaveTracking": true,
+      "conflictDetection": true,
+      "monthLocking": true,
+      "shiftSwaps": true,
+      "reportGeneration": true,
+      "buildMode": false
+    },
+    "security": {
+      "buildModePassword": "CAU"
+    }
+  },
+  "staff": [
+    {
+      "id": "kellie",
+      "name": "Kellie",
+      "workDays": ["monday", "tuesday", "thursday", "friday"]
+    },
+    {
+      "id": "gus",
+      "name": "Gus",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "cheryl",
+      "name": "Cheryl",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "ben",
+      "name": "Ben",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "jenny",
+      "name": "Jenny",
+      "workDays": ["wednesday"]
+    },
+    {
+      "id": "jethro",
+      "name": "Jethro",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "blake",
+      "name": "Blake",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "zak",
+      "name": "Zak",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "di",
+      "name": "Di",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "ash",
+      "name": "Ash",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "mick",
+      "name": "Mick",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "brad",
+      "name": "Brad",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "angela",
+      "name": "Angela",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    {
+      "id": "sonia",
+      "name": "Sonia",
+      "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    }
+  ],
+  "tasks": [
+    {
+      "type": "header",
+      "name": "CAU Administration Inbox - Triage",
+      "id": "header_cau_admin",
+      "category": "cau",
+      "allowTriage": true
+    },
+    {
+      "type": "task",
+      "id": "oir_access_apps",
+      "name": "OIR Access Applications",
+      "category": "cau",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "sanctions_lifts",
+      "name": "Sanctions Lifts",
+      "category": "cau",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "dlr_block_removal",
+      "name": "Driver Licence Renewal - Online Block Removal",
+      "category": "cau",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "vdp_susp_cancel",
+      "name": "VDP/Suspension/Cancellation",
+      "category": "cau",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "create_new_lic_cust",
+      "name": "Create New Licence/Customer Number",
+      "category": "cau",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "dishonoured_payments",
+      "name": "Dishonoured Payments",
+      "category": "cau",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "tag",
+      "name": "TAG",
+      "category": "cau",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "court_appeals",
+      "name": "Court Appeals - 69/70 Fines Act",
+      "category": "cau",
+      "skillLevel": 1
+    },
+    {
+      "type": "header",
+      "name": "CTP",
+      "id": "header_ctp",
+      "category": "ctp",
+      "allowTriage": false
+    },
+    {
+      "type": "task",
+      "id": "ctp_general",
+      "name": "CTP - General",
+      "category": "ctp",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "ctp_complaints",
+      "name": "CTP Complaints",
+      "category": "ctp",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "ctp_icare_refund",
+      "name": "CTP icare Refund",
+      "category": "ctp",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "ctp_ncat",
+      "name": "CTP NCAT",
+      "category": "ctp",
+      "skillLevel": 3
+    },
+    {
+      "type": "task",
+      "id": "ctp_sira",
+      "name": "CTP SIRA",
+      "category": "ctp",
+      "skillLevel": 3
+    },
+    {
+      "type": "task",
+      "id": "ctp_refund_general",
+      "name": "CTP Refund - General",
+      "category": "ctp",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "ctp_sira_data",
+      "name": "CTP SIRA Data",
+      "category": "ctp",
+      "skillLevel": 3
+    },
+    {
+      "type": "task",
+      "id": "ctp_veh_write_off",
+      "name": "CTP Vehicle Write Off",
+      "category": "ctp",
+      "skillLevel": 2
+    },
+    {
+      "type": "header",
+      "name": "INFO (Information)",
+      "id": "header_info",
+      "category": "info",
+      "allowTriage": false
+    },
+    {
+      "type": "task",
+      "id": "fines_general",
+      "name": "Fines - General",
+      "category": "info",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "freedom_info",
+      "name": "Freedom of Information",
+      "category": "info",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "registration_general",
+      "name": "Registration - General",
+      "category": "info",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "ctp_general_info",
+      "name": "CTP - General",
+      "category": "info",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "rego_labels",
+      "name": "Rego Labels",
+      "category": "info",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "drivers_licence",
+      "name": "Drivers Licence",
+      "category": "info",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "number_plates",
+      "name": "Number Plates",
+      "category": "info",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "etoll",
+      "name": "e-Toll",
+      "category": "info",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "transfer_rego",
+      "name": "Transfer of Registration",
+      "category": "info",
+      "skillLevel": 1
+    },
+    {
+      "type": "header",
+      "name": "ROI (Release of Information)",
+      "id": "header_roi",
+      "category": "roi",
+      "allowTriage": false
+    },
+    {
+      "type": "task",
+      "id": "release_info_rego",
+      "name": "Release of Information - Registration",
+      "category": "roi",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "release_info_dl",
+      "name": "Release of Information - Driver Licence",
+      "category": "roi",
+      "skillLevel": 2
+    },
+    {
+      "type": "task",
+      "id": "release_info_ctp",
+      "name": "Release of Information - CTP",
+      "category": "roi",
+      "skillLevel": 2
+    },
+    {
+      "type": "header",
+      "name": "Printing",
+      "id": "header_printing",
+      "category": "printing",
+      "allowTriage": false
+    },
+    {
+      "type": "task",
+      "id": "print_authority_dispose",
+      "name": "Print Authority to Dispose (ATD)",
+      "category": "printing",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "print_medical_certs",
+      "name": "Print Medical Certificates",
+      "category": "printing",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "print_labels",
+      "name": "Print Labels",
+      "category": "printing",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "demerit_points",
+      "name": "Demerit Points",
+      "category": "printing",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "print_rego_papers",
+      "name": "Print Registration Papers",
+      "category": "printing",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "print_notices_demand",
+      "name": "Print Notices of Demand",
+      "category": "printing",
+      "skillLevel": 1
+    },
+    {
+      "type": "task",
+      "id": "print_refund_letters",
+      "name": "Print Refund Letters",
+      "category": "printing",
+      "skillLevel": 1
+    }
+  ],
+  "categories": [
+    {
+      "id": "cau",
+      "name": "CAU Administration",
+      "color": "#6d28d9"
+    },
+    {
+      "id": "ctp",
+      "name": "CTP",
+      "color": "#16a34a"
+    },
+    {
+      "id": "info",
+      "name": "Information",
+      "color": "#ea580c"
+    },
+    {
+      "id": "roi",
+      "name": "Release of Information",
+      "color": "#0284c7"
+    },
+    {
+      "id": "printing",
+      "name": "Printing",
+      "color": "#4b5563"
+    }
+  ]
+}

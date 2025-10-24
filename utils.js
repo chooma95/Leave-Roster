@@ -1,7 +1,15 @@
 // ===== MODULE: Utility Functions =====
 // Core utility functions for date handling, string manipulation, and data processing.
 
+// Import the correct DateUtils from config.js for getWeek() method
+import { DateUtils as ConfigDateUtils } from './config.js';
+
 export class DateUtils {
+    // Use the Tuesday-Monday week structure from config.js
+    static getWeek(date) {
+        return ConfigDateUtils.getWeek(date);
+    }
+
     static formatDate(date, options = {}) {
         if (!(date instanceof Date)) {
             date = new Date(date);
@@ -30,20 +38,9 @@ export class DateUtils {
         return date.toISOString().split('T')[0];
     }
 
-    static getWeek(date) {
-        const startOfWeek = new Date(date);
-        const day = startOfWeek.getDay();
-        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
-        startOfWeek.setDate(diff);
-        
-        const week = [];
-        for (let i = 0; i < 7; i++) {
-            const day = new Date(startOfWeek);
-            day.setDate(startOfWeek.getDate() + i);
-            week.push(day);
-        }
-        return week;
-    }
+    // NOTE: getWeek() removed from utils.js - use DateUtils from config.js instead
+    // The config.js version implements Tuesday-Monday work week structure
+    // which is the standard for this application
 
     static getWorkingDaysInMonth(date) {
         const year = date.getFullYear();

@@ -1,5 +1,6 @@
 import { DateUtils, ObjectUtils } from './utils.js';
 import { NotificationManager } from './ui.js';
+import { ScheduleUtils } from './config/staff-schema.js';
 
 export class AssignmentManager {
     constructor(app) {
@@ -274,7 +275,7 @@ export class AssignmentManager {
                 // Skill optimization suggestions
                 const eligibleStaff = this.app.skillsManager.getEligibleStaffForTask(taskId)
                     .filter(s => 
-                        s.workDays.includes(dayName) && 
+                        ScheduleUtils.worksOnDate(s, date) && 
                         !this.app.assignmentGenerator.getStaffLeave(s.id, date)
                     );
 
@@ -519,10 +520,9 @@ export class AssignmentManager {
                 
                 tasksToMove.forEach(([taskId, allocation]) => {
                     const eligibleUnderloaded = underloaded.filter(staff => {
-                        const dayName = DateUtils.getDayName(date);
                         const staffMember = this.app.getStaffById(staff.id);
                         return staffMember && 
-                               staffMember.workDays.includes(dayName) &&
+                               ScheduleUtils.worksOnDate(staffMember, date) &&
                                this.app.skillsManager.canStaffDoTask(staff.id, taskId) &&
                                !this.app.assignmentGenerator.getStaffLeave(staff.id, date);
                     });

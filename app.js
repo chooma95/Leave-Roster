@@ -5,20 +5,47 @@ import { UIManager, NotificationManager } from './ui.js';
 import { ModalManager } from './modals.js';
 import { ConflictManager } from './conflicts.js';
 import { AssignmentManager } from './assignments.js';
+import { ConfigManager } from './core/config-manager.js';
+import { FeatureFlags } from './core/feature-flags.js';
+import { TemplateLoader } from './core/template-loader.js';
+import { SetupWizard } from './core/setup-wizard.js';
+import { SmartAssignmentEngine } from './core/auto-assignment.js';
+import { StaffMigration, ScheduleUtils } from './config/staff-schema.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded - Initializing Work Allocation Roster');
+    console.log('DOM Content Loaded - Initializing Work Allocation Roster v3.5.0');
     
     class WorkAllocationRoster {
         constructor() {
             this.errorHandler = new ErrorHandler();
             this.errorHandler.setupGlobalHandlers();
+            this.configManager = new ConfigManager();
             this.initializationPromise = this.initialize();
         }
 
         async initialize() {
             try {
                 console.log('Starting application initialization...');
+                
+                // Initialize configuration system first
+                await this.configManager.initialize();
+                console.log('✓ ConfigManager initialized');
+                
+                // Initialize feature flags and template loader
+                this.featureFlags = new FeatureFlags(this.configManager);
+                this.templateLoader = new TemplateLoader(this.configManager);
+                this.setupWizard = new SetupWizard(this.configManager, this.templateLoader);
+                console.log('✓ FeatureFlags, TemplateLoader, and SetupWizard initialized');
+                
+                // Check if wizard should be shown (first-run)
+                const shouldShowWizard = await this.setupWizard.shouldShowWizard();
+                if (shouldShowWizard) {
+                    console.log('🧙 First-run detected - showing setup wizard');
+                    await this.setupWizard.start();
+                    // Wizard will reload the page after completion
+                    return; // Stop initialization here
+                }
+                
                 this.initializeState();
                 console.log('✓ Application state initialized');
                 
@@ -86,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.skillsManager = new SkillsManager({}, [], []);
             this.rotationManager = new RotationManager([]);
             this.assignmentGenerator = new AssignmentGenerator([], [], this.skillsManager, {}, {}, {}, {});
+            this.smartAssignment = new SmartAssignmentEngine(this);
             this.debouncedSave = PerformanceUtils.debounce(() => this.saveData(), 500);
             
             this.debouncedConflictCheck = PerformanceUtils.debounce(() => this.conflictManager?.checkAndDisplayConflicts(), 300);
@@ -122,8 +150,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         async processLoadedData(data) {
-            this.state.staff = this.validateAndMigrateStaff(data.staff || DEFAULT_STAFF);
-            this.state.tasks = this.validateAndMigrateTasks(data.tasks || DEFAULT_TASKS);
+            // Load staff and tasks from ConfigManager or fallback to saved data or defaults
+            // Priority: 1) Saved data 2) ConfigManager (from template) 3) Hardcoded defaults
+            let defaultStaff = DEFAULT_STAFF;
+            let defaultTasks = DEFAULT_TASKS;
+            
+            // Try to get staff/tasks from ConfigManager (template data)
+            if (this.configManager) {
+                const configStaff = this.configManager.get('organization.staff');
+                const configTasks = this.configManager.get('organization.tasks');
+                
+                if (configStaff && Array.isArray(configStaff) && configStaff.length > 0) {
+                    defaultStaff = configStaff;
+                }
+                if (configTasks && Array.isArray(configTasks) && configTasks.length > 0) {
+                    defaultTasks = configTasks;
+                }
+            }
+            
+            // Migrate staff to new enhanced format (v3.5.0)
+            const loadedStaff = data.staff || defaultStaff;
+            const migratedStaff = StaffMigration.migrateAll(loadedStaff);
+            this.state.staff = this.validateAndMigrateStaff(migratedStaff);
+            
+            this.state.tasks = this.validateAndMigrateTasks(data.tasks || defaultTasks);
             this.state.allocations = data.allocations || {};
             this.state.leaveRoster = data.leaveRoster || {};
             this.state.phoneRoster = data.phoneRoster || {};
@@ -137,6 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             this.state.assignmentSuggestions = data.assignmentSuggestions || {};
             this.state.lastLeaveUpdate = data.lastLeaveUpdate || null;
+            
+            console.log('✓ Staff data migrated to v3.5.0 enhanced format');
         }
 
         async handleUserProfile(userProfile) {
@@ -672,8 +724,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: 'Reset to Defaults',
                 message: 'This will reset all staff, tasks, and skills to default values. Assignment data will be preserved. Continue?',
                 onConfirm: () => {
-                    this.state.staff = JSON.parse(JSON.stringify(DEFAULT_STAFF));
-                    this.state.tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+                    // Try to get defaults from ConfigManager (template), otherwise use hardcoded defaults
+                    let defaultStaff = DEFAULT_STAFF;
+                    let defaultTasks = DEFAULT_TASKS;
+                    
+                    if (this.configManager) {
+                        const configStaff = this.configManager.get('organization.staff');
+                        const configTasks = this.configManager.get('organization.tasks');
+                        
+                        if (configStaff && Array.isArray(configStaff)) defaultStaff = configStaff;
+                        if (configTasks && Array.isArray(configTasks)) defaultTasks = configTasks;
+                    }
+                    
+                    this.state.staff = JSON.parse(JSON.stringify(defaultStaff));
+                    this.state.tasks = JSON.parse(JSON.stringify(defaultTasks));
                     this.state.skillsMatrix = JSON.parse(JSON.stringify(DEFAULT_SKILLS_MATRIX));
                     
                     this.reinitializeManagers();
@@ -1058,8 +1122,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         initializeDefaults() {
-            this.state.staff = JSON.parse(JSON.stringify(DEFAULT_STAFF));
-            this.state.tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+            // Try to get defaults from ConfigManager (template), otherwise use hardcoded defaults
+            let defaultStaff = DEFAULT_STAFF;
+            let defaultTasks = DEFAULT_TASKS;
+            
+            if (this.configManager) {
+                const configStaff = this.configManager.get('organization.staff');
+                const configTasks = this.configManager.get('organization.tasks');
+                
+                if (configStaff && Array.isArray(configStaff) && configStaff.length > 0) {
+                    defaultStaff = configStaff;
+                }
+                if (configTasks && Array.isArray(configTasks) && configTasks.length > 0) {
+                    defaultTasks = configTasks;
+                }
+            }
+            
+            this.state.staff = JSON.parse(JSON.stringify(defaultStaff));
+            this.state.tasks = JSON.parse(JSON.stringify(defaultTasks));
             this.state.skillsMatrix = JSON.parse(JSON.stringify(DEFAULT_SKILLS_MATRIX));
         }
 

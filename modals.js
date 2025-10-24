@@ -1898,6 +1898,434 @@ export class ModalManager {
         this.setupModalCloseHandlers(modal);
     }
 
+    // ===== CONFIGURATION SETTINGS MODAL =====
+
+    showConfigurationModal() {
+        if (!this.app.configManager || !this.app.configManager.initialized) {
+            NotificationManager.show('Configuration system not initialized', 'error');
+            return;
+        }
+
+        const config = this.app.configManager.getEditableConfig();
+        
+        const modal = this.createModal({
+            title: 'System Configuration',
+            size: 'modal-large',
+            content: this.renderConfigurationContent(config),
+            footer: `
+                <button class="btn btn-ghost close-modal">Cancel</button>
+                <button class="btn btn-secondary export-config">Export Config</button>
+                <button class="btn btn-primary save-config">Save Changes</button>
+            `
+        });
+
+        this.setupConfigurationHandlers(modal, config);
+        document.body.appendChild(modal);
+    }
+
+    renderConfigurationContent(config) {
+        return `
+            <div class="config-container">
+                <div class="config-tabs">
+                    <button class="config-tab active" data-tab="organization">
+                        <span class="material-icons">business</span>
+                        Organization
+                    </button>
+                    <button class="config-tab" data-tab="workweek">
+                        <span class="material-icons">calendar_today</span>
+                        Work Week
+                    </button>
+                    <button class="config-tab" data-tab="features">
+                        <span class="material-icons">toggle_on</span>
+                        Features
+                    </button>
+                    <button class="config-tab" data-tab="display">
+                        <span class="material-icons">palette</span>
+                        Display
+                    </button>
+                </div>
+
+                <div class="config-panels">
+                    <div class="config-panel active" data-panel="organization">
+                        ${this.renderOrganizationPanel(config.organization || {})}
+                    </div>
+                    
+                    <div class="config-panel" data-panel="workweek">
+                        ${this.renderWorkWeekPanel(config.workWeek || {})}
+                    </div>
+                    
+                    <div class="config-panel" data-panel="features">
+                        ${this.renderFeaturesPanel(config.features || {})}
+                    </div>
+                    
+                    <div class="config-panel" data-panel="display">
+                        ${this.renderDisplayPanel(config.display || {})}
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .config-container {
+                    display: flex;
+                    gap: 1rem;
+                    height: 500px;
+                }
+                .config-tabs {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    width: 180px;
+                    border-right: 1px solid var(--gray-200);
+                    padding-right: 1rem;
+                }
+                .config-tab {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.75rem 1rem;
+                    background: transparent;
+                    border: 1px solid transparent;
+                    border-radius: 0.5rem;
+                    cursor: pointer;
+                    text-align: left;
+                    transition: all 0.2s;
+                }
+                .config-tab:hover {
+                    background: var(--gray-100);
+                }
+                .config-tab.active {
+                    background: var(--primary);
+                    color: white;
+                    border-color: var(--primary);
+                }
+                .config-panels {
+                    flex: 1;
+                    overflow-y: auto;
+                }
+                .config-panel {
+                    display: none;
+                }
+                .config-panel.active {
+                    display: block;
+                }
+                .config-section {
+                    margin-bottom: 2rem;
+                }
+                .config-section h3 {
+                    margin-bottom: 1rem;
+                    color: var(--gray-800);
+                }
+                .form-group {
+                    margin-bottom: 1rem;
+                }
+                .form-group label {
+                    display: block;
+                    margin-bottom: 0.5rem;
+                    font-weight: 500;
+                    color: var(--gray-700);
+                }
+                .form-group input, .form-group select {
+                    width: 100%;
+                    padding: 0.5rem;
+                    border: 1px solid var(--gray-300);
+                    border-radius: 0.25rem;
+                }
+                .feature-toggle {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 1rem;
+                    border: 1px solid var(--gray-200);
+                    border-radius: 0.5rem;
+                    margin-bottom: 0.5rem;
+                }
+                .feature-info {
+                    flex: 1;
+                }
+                .feature-name {
+                    font-weight: 500;
+                    color: var(--gray-800);
+                }
+                .feature-description {
+                    font-size: 0.875rem;
+                    color: var(--gray-600);
+                    margin-top: 0.25rem;
+                }
+                .toggle-switch {
+                    position: relative;
+                    width: 48px;
+                    height: 24px;
+                }
+                .toggle-switch input {
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+                .toggle-slider {
+                    position: absolute;
+                    cursor: pointer;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: var(--gray-300);
+                    transition: 0.3s;
+                    border-radius: 24px;
+                }
+                .toggle-slider:before {
+                    position: absolute;
+                    content: "";
+                    height: 18px;
+                    width: 18px;
+                    left: 3px;
+                    bottom: 3px;
+                    background-color: white;
+                    transition: 0.3s;
+                    border-radius: 50%;
+                }
+                input:checked + .toggle-slider {
+                    background-color: var(--primary);
+                }
+                input:checked + .toggle-slider:before {
+                    transform: translateX(24px);
+                }
+            </style>
+        `;
+    }
+
+    renderOrganizationPanel(org) {
+        return `
+            <div class="config-section">
+                <h3>Organization Details</h3>
+                
+                <div class="form-group">
+                    <label for="org-name">Organization Name</label>
+                    <input type="text" id="org-name" class="form-input" 
+                           value="${org.name || 'Work Allocation Team'}"
+                           placeholder="Enter organization name">
+                </div>
+
+                <div class="form-group">
+                    <label for="org-region">Region (for holidays)</label>
+                    <select id="org-region" class="form-input">
+                        <option value="NSW" ${org.region === 'NSW' ? 'selected' : ''}>NSW</option>
+                        <option value="VIC" ${org.region === 'VIC' ? 'selected' : ''}>VIC</option>
+                        <option value="QLD" ${org.region === 'QLD' ? 'selected' : ''}>QLD</option>
+                        <option value="SA" ${org.region === 'SA' ? 'selected' : ''}>SA</option>
+                        <option value="WA" ${org.region === 'WA' ? 'selected' : ''}>WA</option>
+                        <option value="TAS" ${org.region === 'TAS' ? 'selected' : ''}>TAS</option>
+                        <option value="ACT" ${org.region === 'ACT' ? 'selected' : ''}>ACT</option>
+                        <option value="NT" ${org.region === 'NT' ? 'selected' : ''}>NT</option>
+                        <option value="Custom" ${org.region === 'Custom' ? 'selected' : ''}>Custom</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="org-timezone">Timezone</label>
+                    <input type="text" id="org-timezone" class="form-input" 
+                           value="${org.timezone || 'Australia/Sydney'}"
+                           placeholder="IANA timezone (e.g., Australia/Sydney)">
+                </div>
+            </div>
+        `;
+    }
+
+    renderWorkWeekPanel(workWeek) {
+        const startDay = workWeek.startDay || 'tuesday';
+        return `
+            <div class="config-section">
+                <h3>Work Week Configuration</h3>
+                
+                <div class="form-group">
+                    <label for="start-day">Week Start Day</label>
+                    <select id="start-day" class="form-input">
+                        <option value="monday" ${startDay === 'monday' ? 'selected' : ''}>Monday</option>
+                        <option value="tuesday" ${startDay === 'tuesday' ? 'selected' : ''}>Tuesday</option>
+                        <option value="wednesday" ${startDay === 'wednesday' ? 'selected' : ''}>Wednesday</option>
+                        <option value="thursday" ${startDay === 'thursday' ? 'selected' : ''}>Thursday</option>
+                        <option value="friday" ${startDay === 'friday' ? 'selected' : ''}>Friday</option>
+                    </select>
+                    <small>Note: Changing this requires page reload to take effect</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Working Days</label>
+                    <div class="checkbox-group">
+                        ${['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map(day => `
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="working-days" value="${day}" 
+                                       ${(workWeek.workingDays || []).includes(day) ? 'checked' : ''}>
+                                <span>${day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    renderFeaturesPanel(features) {
+        const featureList = [
+            { id: 'triageAssignments', name: 'Triage Assignments', desc: 'Category-level triage assignments' },
+            { id: 'skillsMatrix', name: 'Skills Matrix', desc: 'Skill-based assignment system' },
+            { id: 'workOnHand', name: 'Work on Hand (WOH)', desc: 'WOH tracking with SLA monitoring' },
+            { id: 'leaveTracking', name: 'Leave Tracking', desc: 'Staff leave planning and roster' },
+            { id: 'conflictDetection', name: 'Conflict Detection', desc: 'Automatic conflict detection' },
+            { id: 'monthLocking', name: 'Month Locking', desc: 'Lock completed months' },
+            { id: 'shiftSwaps', name: 'Shift Swaps', desc: 'Phone shift swap functionality' },
+            { id: 'reportGeneration', name: 'Report Generation', desc: 'Advanced reporting features' }
+        ];
+
+        return `
+            <div class="config-section">
+                <h3>Feature Toggles</h3>
+                <p style="color: var(--gray-600); margin-bottom: 1rem;">
+                    Enable or disable features based on your team's needs. Changes take effect after page reload.
+                </p>
+                
+                ${featureList.map(feature => `
+                    <div class="feature-toggle">
+                        <div class="feature-info">
+                            <div class="feature-name">${feature.name}</div>
+                            <div class="feature-description">${feature.desc}</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="feature-${feature.id}" 
+                                   ${features[feature.id] !== false ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    renderDisplayPanel(display) {
+        return `
+            <div class="config-section">
+                <h3>Display Preferences</h3>
+                
+                <div class="form-group">
+                    <label for="theme">Theme</label>
+                    <select id="theme" class="form-input">
+                        <option value="light" ${display.theme === 'light' ? 'selected' : ''}>Light</option>
+                        <option value="dark" ${display.theme === 'dark' ? 'selected' : ''}>Dark</option>
+                        <option value="auto" ${display.theme === 'auto' ? 'selected' : ''}>Auto (System)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="default-view">Default View</label>
+                    <select id="default-view" class="form-input">
+                        <option value="full" ${display.defaultView === 'full' ? 'selected' : ''}>Full Roster</option>
+                        <option value="personal" ${display.defaultView === 'personal' ? 'selected' : ''}>Personal View</option>
+                    </select>
+                </div>
+
+                <div class="feature-toggle">
+                    <div class="feature-info">
+                        <div class="feature-name">Compact Mode</div>
+                        <div class="feature-description">Use smaller fonts and spacing</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="compact-mode" 
+                               ${display.compactMode === true ? 'checked' : ''}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        `;
+    }
+
+    setupConfigurationHandlers(modal, currentConfig) {
+        // Tab switching
+        modal.querySelectorAll('.config-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                // Update tabs
+                modal.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update panels
+                modal.querySelectorAll('.config-panel').forEach(p => p.classList.remove('active'));
+                modal.querySelector(`[data-panel="${tabName}"]`)?.classList.add('active');
+            });
+        });
+
+        // Save configuration
+        modal.querySelector('.save-config')?.addEventListener('click', async () => {
+            await this.saveConfiguration(modal);
+            modal.remove();
+        });
+
+        // Export configuration
+        modal.querySelector('.export-config')?.addEventListener('click', () => {
+            const exported = this.app.configManager.exportConfig();
+            const dataStr = JSON.stringify(exported, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `roster-config-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            NotificationManager.show('Configuration exported', 'success');
+        });
+
+        this.setupModalCloseHandlers(modal);
+    }
+
+    async saveConfiguration(modal) {
+        try {
+            // Gather organization data
+            const orgData = {
+                name: modal.querySelector('#org-name')?.value || 'Work Allocation Team',
+                region: modal.querySelector('#org-region')?.value || 'NSW',
+                timezone: modal.querySelector('#org-timezone')?.value || 'Australia/Sydney'
+            };
+
+            // Gather work week data
+            const workWeekData = {
+                startDay: modal.querySelector('#start-day')?.value || 'tuesday',
+                workingDays: Array.from(modal.querySelectorAll('input[name="working-days"]:checked'))
+                    .map(input => input.value)
+            };
+
+            // Gather feature flags
+            const featuresData = {};
+            modal.querySelectorAll('input[name^="feature-"]').forEach(input => {
+                const featureName = input.name.replace('feature-', '');
+                featuresData[featureName] = input.checked;
+            });
+
+            // Gather display preferences
+            const displayData = {
+                theme: modal.querySelector('#theme')?.value || 'light',
+                defaultView: modal.querySelector('#default-view')?.value || 'full',
+                compactMode: modal.querySelector('#compact-mode')?.checked || false
+            };
+
+            // Update configuration
+            await this.app.configManager.updateSection('organization', orgData);
+            await this.app.configManager.updateSection('workWeek', workWeekData);
+            await this.app.configManager.updateSection('features', featuresData);
+            await this.app.configManager.updateSection('display', displayData);
+
+            NotificationManager.show('Configuration saved! Page will reload...', 'success');
+            
+            // Reload page to apply changes
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (error) {
+            console.error('Error saving configuration:', error);
+            NotificationManager.show('Failed to save configuration', 'error');
+        }
+    }
+
     // ===== UTILITY METHODS =====
 
     createModal({ title, content, footer, size = 'modal-medium' }) {

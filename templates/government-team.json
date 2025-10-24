@@ -1,0 +1,120 @@
+{
+  "name": "NSW Government Team Template",
+  "description": "Pre-configured for NSW Government administrative teams with Tuesday-Monday work week, phone coverage, and SLA tracking",
+  "version": "3.2.0",
+  "config": {
+    "organization": {
+      "name": "NSW Government Team",
+      "timezone": "Australia/Sydney",
+      "region": "NSW"
+    },
+    "workWeek": {
+      "structure": ["tuesday", "wednesday", "thursday", "friday", "monday"],
+      "startDay": "tuesday",
+      "workingDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    "phoneShifts": {
+      "enabled": true,
+      "shifts": [
+        {
+          "id": "early",
+          "name": "Early",
+          "startTime": "08:00",
+          "endTime": "12:00",
+          "color": "#3b82f6"
+        },
+        {
+          "id": "late",
+          "name": "Late",
+          "startTime": "12:00",
+          "endTime": "17:00",
+          "color": "#8b5cf6"
+        }
+      ],
+      "rotationWeeks": 6,
+      "maxStaffPerShift": 2,
+      "allowDoubleShifts": true
+    },
+    "sla": {
+      "enabled": true,
+      "defaultDays": 14,
+      "warningThreshold": 8,
+      "criticalThreshold": 11,
+      "taskOverrides": {}
+    },
+    "features": {
+      "triageAssignments": true,
+      "skillsMatrix": true,
+      "workOnHand": true,
+      "leaveTracking": true,
+      "conflictDetection": true,
+      "monthLocking": true,
+      "shiftSwaps": true,
+      "reportGeneration": true,
+      "buildMode": false
+    },
+    "security": {
+      "buildModePassword": "CAU",
+      "requirePasswordForAdmin": true
+    },
+    "display": {
+      "theme": "light",
+      "defaultView": "full",
+      "compactMode": false
+    }
+  },
+  "sampleData": {
+    "staff": [
+      {
+        "id": "staff-1",
+        "name": "Team Member 1",
+        "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      },
+      {
+        "id": "staff-2",
+        "name": "Team Member 2",
+        "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      },
+      {
+        "id": "staff-3",
+        "name": "Team Member 3",
+        "workDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      },
+      {
+        "id": "part-timer",
+        "name": "Part Time Staff",
+        "workDays": ["wednesday"]
+      }
+    ],
+    "tasks": [
+      {
+        "type": "header",
+        "name": "Administration - Triage",
+        "id": "header_admin",
+        "category": "admin",
+        "allowTriage": true
+      },
+      {
+        "type": "task",
+        "id": "general_inbox",
+        "name": "General Inbox",
+        "category": "admin",
+        "skillLevel": 1
+      },
+      {
+        "type": "task",
+        "id": "urgent_requests",
+        "name": "Urgent Requests",
+        "category": "admin",
+        "skillLevel": 2
+      }
+    ],
+    "categories": [
+      {
+        "id": "admin",
+        "name": "Administration",
+        "color": "#6d28d9"
+      }
+    ]
+  }
+}

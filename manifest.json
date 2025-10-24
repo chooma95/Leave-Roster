@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Work Allocation Roster",
-  "version": "3.1.0",
-  "description": "Professional collaborative tool for managing weekly work allocation, shifts, and leave with NSW public holiday support and advanced features.",
+  "version": "3.4.0",
+  "description": "Professional collaborative tool for managing weekly work allocation, shifts, and leave with NSW public holiday support. Features responsive design, complete configuration system with feature flags, team templates, and first-run Setup Wizard for easy onboarding.",
   "permissions": [
     "storage",
     "unlimitedStorage",

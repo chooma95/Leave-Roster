@@ -79,10 +79,14 @@ export class UIManager {
     
     renderHeader(week) {
         if (!this.elements.gridHeader) return;
+        
+        // Check if WOH feature is enabled
+        const showWOH = this.app.featureFlags?.isEnabled('workOnHand') ?? true;
+        
         const headerRow = document.createElement('tr');
         headerRow.innerHTML = `
             <th class="task-name-header">Task</th>
-            <th class="woh-header">WOH DD/MM/YY</th>
+            ${showWOH ? '<th class="woh-header">WOH DD/MM/YY</th>' : '<th class="woh-header" style="display: none;"></th>'}
         `;
 
         week.forEach(date => {
@@ -198,6 +202,15 @@ export class UIManager {
     
     renderFooter(week) {
         if (!this.elements.gridFooter) return;
+        
+        // Check if phone shifts are enabled
+        const phoneShiftsEnabled = this.app.configManager?.get('phoneShifts.enabled') ?? true;
+        
+        if (!phoneShiftsEnabled) {
+            this.elements.gridFooter.innerHTML = '';
+            return;
+        }
+        
         const footerRow = document.createElement('tr');
         footerRow.className = 'phone-coverage-row';
         footerRow.innerHTML = `
@@ -222,6 +235,10 @@ export class UIManager {
         const headerRow = document.createElement('tr');
         headerRow.className = `category-header-row category-${header.category} ${isCollapsed ? 'collapsed' : ''}`;
         
+        // Check feature flags
+        const showWOH = this.app.featureFlags?.isEnabled('workOnHand') ?? true;
+        const showTriage = this.app.featureFlags?.isEnabled('triageAssignments') ?? true;
+        
         headerRow.innerHTML = `
             <td class="category-header-cell">
                 <div class="category-header-content">
@@ -229,7 +246,7 @@ export class UIManager {
                         ${isCollapsed ? 'chevron_right' : 'expand_less'}
                     </span>
                     <span class="category-title">${header.name}</span>
-                    ${this.app.state.buildMode && header.allowTriage ? `
+                    ${this.app.state.buildMode && header.allowTriage && showTriage ? `
                         <div class="triage-actions">
                             <button class="assign-triage-btn" data-header="${header.id}">Assign</button>
                             <button class="push-triage-btn" data-header="${header.id}">→</button>
@@ -237,18 +254,18 @@ export class UIManager {
                     ` : ''}
                 </div>
             </td>
-            <td class="woh-column">-</td>
+            <td class="woh-column" ${!showWOH ? 'style="display: none;"' : ''}>-</td>
         `;
 
         week.forEach((date, index) => {
             const assignmentCell = document.createElement('td');
-            assignmentCell.className = `category-header-day-cell ${this.app.state.buildMode && header.allowTriage ? 'clickable' : ''}`;
+            assignmentCell.className = `category-header-day-cell ${this.app.state.buildMode && header.allowTriage && showTriage ? 'clickable' : ''}`;
             assignmentCell.dataset.date = DateUtils.toISODate(date);
             assignmentCell.dataset.header = header.id;
             if (DateUtils.isNSWPublicHoliday(date)) {
                 assignmentCell.classList.add('holiday');
             }
-            assignmentCell.innerHTML = this.renderTriageAssignment(header.id, date);
+            assignmentCell.innerHTML = showTriage ? this.renderTriageAssignment(header.id, date) : '-';
             headerRow.appendChild(assignmentCell);
         });
 
@@ -258,14 +275,19 @@ export class UIManager {
     renderTaskRow(task, week, fragment) {
         const taskRow = document.createElement('tr');
         taskRow.className = `task-row category-${task.category}`;
+        
+        // Check feature flags
+        const showSkillLevel = this.app.featureFlags?.isEnabled('skillsMatrix') ?? true;
+        const showWOH = this.app.featureFlags?.isEnabled('workOnHand') ?? true;
+        
         taskRow.innerHTML = `
             <td class="task-name-cell">
                 <div class="task-name-content">
                     <span class="task-title">${task.name}</span>
-                    <div class="task-skill-info">Skill Level: ${task.skillLevel || 1}</div>
+                    ${showSkillLevel ? `<div class="task-skill-info">Skill Level: ${task.skillLevel || 1}</div>` : ''}
                 </div>
             </td>
-            <td class="woh-column">${this.renderWOHDisplay(task.id)}</td>
+            <td class="woh-column" ${!showWOH ? 'style="display: none;"' : ''}>${showWOH ? this.renderWOHDisplay(task.id) : '-'}</td>
         `;
         
         week.forEach((date, index) => {
@@ -469,11 +491,26 @@ export class UIManager {
             document.body.classList.remove('build-mode');
         }
         
-        // Show/hide build mode buttons
+        // Show/hide build mode buttons based on build mode AND feature flags
         const buildModeButtons = document.querySelectorAll('.build-mode-only');
         buildModeButtons.forEach(btn => {
             btn.style.display = this.app.state.buildMode ? 'inline-flex' : 'none';
         });
+        
+        // Apply feature flag visibility (only when in build mode)
+        if (this.app.state.buildMode) {
+            // Skills Matrix button - requires skillsMatrix feature
+            const skillsBtn = document.getElementById('skills-matrix-btn');
+            if (skillsBtn && !this.app.featureFlags.isEnabled('skillsMatrix')) {
+                skillsBtn.style.display = 'none';
+            }
+            
+            // Generate Shifts button - requires triageAssignments feature
+            const generateBtn = document.getElementById('random-generate-btn');
+            if (generateBtn && !this.app.featureFlags.isEnabled('triageAssignments')) {
+                generateBtn.style.display = 'none';
+            }
+        }
         
         // Update manage button behavior and appearance
         this.updateManageButton();
@@ -1573,6 +1610,10 @@ export class UIManager {
                 </div>
             </div>
             <div class="manage-actions">
+                <button id="configuration-btn" class="btn btn-primary">
+                    <span class="material-icons">settings</span>
+                    Configuration
+                </button>
                 <button id="export-data-btn" class="btn btn-secondary">
                     <span class="material-icons">download</span>
                     Export Data
@@ -1643,6 +1684,12 @@ export class UIManager {
                 modal.remove();
                 this.showManageModal();
             });
+        });
+
+        // Configuration
+        modal.querySelector('#configuration-btn').addEventListener('click', () => {
+            modal.remove();
+            this.app.modalManager.showConfigurationModal();
         });
 
         // Data
